@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= employee.name %> - Weekly Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #4f46e5;
+        --indigo-dark: #3730a3;
+        --indigo-light: #818cf8;
+        --violet: #7c3aed;
+        --emerald: #10b981;
+        --rose: #f43f5e;
+        --amber: #f59e0b;
+        --sidebar-bg: #0f0e17;
+        --sidebar-border: rgba(255, 255, 255, 0.06);
+        --body-bg: #f0f0f7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Sora', sans-serif;
+        background: var(--body-bg);
+        background-image:
+          radial-gradient(ellipse at 20% 0%, rgba(79, 70, 229, 0.06) 0%, transparent 60%),
+          radial-gradient(ellipse at 80% 100%, rgba(124, 58, 237, 0.05) 0%, transparent 60%);
+        min-height: 100vh;
+      }
+
+      /* ── Sidebar ─────────────────────────────── */
+      #sidebar {
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--sidebar-border);
+      }
+      .brand-logo {
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        border-radius: 12px;
+      }
+      .nav-link {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .nav-link:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.9);
+        transform: translateX(3px);
+      }
+      .nav-link.active {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.25), rgba(124, 58, 237, 0.15));
+        color: #fff;
+        border: 1px solid rgba(79, 70, 229, 0.3);
+      }
+      .nav-link.active svg {
+        color: var(--indigo-light);
+      }
+      .nav-link.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 60%;
+        background: linear-gradient(to bottom, var(--indigo-light), var(--violet));
+        border-radius: 0 3px 3px 0;
+      }
+      .logout-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        width: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      .logout-btn:hover {
+        background: rgba(244, 63, 94, 0.12);
+        color: #f87171;
+      }
+
+      /* ── Header ───────────────────────────────── */
+      header {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(79, 70, 229, 0.08);
+      }
+
+      /* ── Mobile sidebar ──────────────────────── */
+      .mobile-menu {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      .mobile-menu.active {
+        transform: translateX(0);
+      }
+
+      /* ── Scrollbar ───────────────────────────── */
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 99px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      /* ── Toolbar buttons ─────────────────────── */
+      .btn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        border-radius: 9px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        font-family: 'Sora', sans-serif;
+        transition: all 0.15s;
+        cursor: pointer;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .btn-add {
+        background: rgba(79, 70, 229, 0.08);
+        color: var(--indigo);
+        border: 1px solid rgba(79, 70, 229, 0.2);
+      }
+      .btn-add:hover {
+        background: rgba(79, 70, 229, 0.14);
+      }
+      .btn-export {
+        background: rgba(16, 185, 129, 0.08);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+      }
+      .btn-export:hover {
+        background: rgba(16, 185, 129, 0.14);
+      }
+
+      /* ── Report Table ────────────────────────── */
+      .table-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+      }
+
+      #reportTable {
+        border-collapse: collapse;
+        min-width: 100%;
+      }
+
+      #reportTable thead tr {
+        background: linear-gradient(135deg, #0f0e17, #1e1b4b);
+      }
+      #reportTable thead th {
+        padding: 12px 14px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.6);
+        white-space: nowrap;
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      #reportTable thead th:last-child {
+        border-right: none;
+      }
+
+      #reportTable tbody td {
+        padding: 12px 14px;
+        font-size: 0.82rem;
+        color: #475569;
+        border-right: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f8fafc;
+        vertical-align: top;
+      }
+      #reportTable tbody td:last-child {
+        border-right: none;
+      }
+      #reportTable tbody tr:last-child td {
+        border-bottom: none;
+      }
+      #reportTable tbody tr {
+        transition: background 0.12s;
+      }
+      #reportTable tbody tr:hover {
+        background: rgba(79, 70, 229, 0.025);
+      }
+      #reportTable tbody tr.row-alt {
+        background: #fafafa;
+      }
+      #reportTable tbody tr.row-alt:hover {
+        background: rgba(79, 70, 229, 0.025);
+      }
+
+      /* col widths */
+      .col-week {
+        width: 64px;
+        min-width: 56px;
+      }
+      .col-submitted {
+        width: 110px;
+        min-width: 100px;
+      }
+      .col-task {
+        width: 220px;
+        min-width: 180px;
+      }
+      .col-desc {
+        width: 300px;
+        min-width: 220px;
+      }
+      .col-status {
+        width: 100px;
+        min-width: 88px;
+      }
+      .col-leave {
+        width: 200px;
+        min-width: 160px;
+      }
+      .col-attend {
+        width: 210px;
+        min-width: 170px;
+      }
+      .col-actions {
+        width: 130px;
+        min-width: 120px;
+      }
+
+      /* Week badge */
+      .week-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3px 10px;
+        border-radius: 7px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        color: #fff;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+      }
+      .week-badge-empty {
+        background: rgba(79, 70, 229, 0.07);
+        color: var(--indigo);
+        border: 1px dashed rgba(79, 70, 229, 0.25);
+      }
+
+      /* Status badges */
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 9px;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .status-completed {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+      }
+      .status-in-progress {
+        background: rgba(79, 70, 229, 0.08);
+        color: var(--indigo);
+        border: 1px solid rgba(79, 70, 229, 0.15);
+      }
+      .status-pending {
+        background: rgba(245, 158, 11, 0.08);
+        color: #d97706;
+        border: 1px solid rgba(245, 158, 11, 0.15);
+      }
+
+      /* Bullet lists in cells */
+      .cell-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        space-y: 4px;
+      }
+      .cell-list li {
+        display: flex;
+        gap: 6px;
+        align-items: flex-start;
+        margin-bottom: 4px;
+        font-size: 0.78rem;
+        line-height: 1.45;
+      }
+      .cell-list li:last-child {
+        margin-bottom: 0;
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        margin-top: 4px;
+      }
+      .dot-blue {
+        background: #818cf8;
+      }
+      .dot-orange {
+        background: #fb923c;
+      }
+      .dot-purple {
+        background: #a78bfa;
+      }
+
+      /* Action buttons in table */
+      .tbl-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        padding: 5px 10px;
+        border-radius: 7px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        font-family: 'Sora', sans-serif;
+        transition: all 0.15s;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        width: 100%;
+      }
+      .tbl-btn-edit {
+        background: rgba(79, 70, 229, 0.07);
+        color: var(--indigo);
+        border: 1px solid rgba(79, 70, 229, 0.15);
+      }
+      .tbl-btn-edit:hover {
+        background: rgba(79, 70, 229, 0.14);
+      }
+      .tbl-btn-delete {
+        background: rgba(244, 63, 94, 0.07);
+        color: #e11d48;
+        border: 1px solid rgba(244, 63, 94, 0.15);
+      }
+      .tbl-btn-delete:hover {
+        background: rgba(244, 63, 94, 0.13);
+      }
+
+      /* submitted date */
+      .submitted-date {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.73rem;
+        color: #94a3b8;
+      }
+
+      /* ── Modals ──────────────────────────────── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 14, 23, 0.55);
+        backdrop-filter: blur(4px);
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .modal-box {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+        max-height: 90vh;
+        overflow: hidden;
+        transform: scale(0.95);
+        opacity: 0;
+        transition: all 0.2s ease;
+      }
+      .modal-box.open {
+        transform: scale(1);
+        opacity: 1;
+      }
+      .modal-header {
+        padding: 20px 24px;
+        background: linear-gradient(135deg, #0f0e17, #1e1b4b);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .modal-close-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .modal-close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .field-label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 6px;
+      }
+      .field-select {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-family: 'Sora', sans-serif;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        color: #0f172a;
+        background: #f8fafc;
+      }
+      .field-select:focus {
+        border-color: var(--indigo);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        background: #fff;
+      }
+
+      .export-radio-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .export-radio-card:hover {
+        border-color: #a5b4fc;
+        background: rgba(79, 70, 229, 0.02);
+      }
+      .export-radio-card:has(input:checked) {
+        border-color: var(--indigo);
+        background: rgba(79, 70, 229, 0.04);
+      }
+
+      .btn-primary {
+        padding: 9px 20px;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition:
+          opacity 0.15s,
+          box-shadow 0.15s;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+      }
+      .btn-primary:hover {
+        opacity: 0.9;
+        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+      }
+
+      .btn-ghost {
+        padding: 9px 18px;
+        background: none;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        font-family: 'Sora', sans-serif;
+        color: #475569;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .btn-ghost:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+      }
+
+      .btn-danger {
+        padding: 9px 20px;
+        background: linear-gradient(135deg, #f43f5e, #e11d48);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: opacity 0.15s;
+        box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
+      }
+      .btn-danger:hover {
+        opacity: 0.9;
+      }
+
+      /* employee info chip in toolbar */
+      .emp-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid rgba(79, 70, 229, 0.1);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      }
+      .emp-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.875rem;
+        color: #fff;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .animate-spin {
+        animation: spin 1s linear infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="flex h-screen overflow-hidden">
+      <!-- Mobile overlay -->
+      <div
+        id="mobileMenuOverlay"
+        class="fixed inset-0 bg-black bg-opacity-60 z-40 lg:hidden hidden"
+      ></div>
+
+      <!-- ── Sidebar ───────────────────────────────── -->
+      <aside
+        id="sidebar"
+        class="mobile-menu fixed lg:static inset-y-0 left-0 z-50 w-64 flex flex-col lg:transform-none"
+        style="min-width: 240px"
+      >
+        <button
+          id="closeSidebar"
+          class="lg:hidden absolute top-4 right-4 text-gray-400 hover:text-white z-10"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <!-- Brand -->
+        <div class="p-5 border-b" style="border-color: var(--sidebar-border)">
+          <div class="flex items-center gap-3">
+            <div class="brand-logo w-10 h-10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </div>
+            <div>
+              <p class="text-white font-bold text-base leading-tight">Task Recorder</p>
+              <p class="text-xs" style="color: rgba(255, 255, 255, 0.35)">Admin Panel</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nav -->
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+          <p
+            class="text-xs font-semibold uppercase tracking-widest mb-3 px-2"
+            style="color: rgba(255, 255, 255, 0.2)"
+          >
+            Navigation
+          </p>
+
+          <a href="/admin/dashboard" class="nav-link">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            Dashboard
+          </a>
+          <a href="/admin/employees" class="nav-link active">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+            Employees
+          </a>
+          <a href="/admin/create-user" class="nav-link">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+              />
+            </svg>
+            Create User
+          </a>
+          <div class="my-4 border-t" style="border-color: rgba(255, 255, 255, 0.06)"></div>
+        </nav>
+
+        <!-- Logout -->
+        <div class="p-4 border-t" style="border-color: var(--sidebar-border)">
+          <!-- Company Logo -->
+          <div class="mb-4 px-1">
+            <img
+              src="/images/Full_logo_image.png"
+              alt="Conspicuous Solutions"
+              style="
+                width: 100%;
+                max-width: 180px;
+                height: auto;
+                object-fit: contain;
+                display: block;
+                margin: 0 auto;
+                opacity: 0.85;
+                filter: brightness(1.1);
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '1'"
+              onmouseout="this.style.opacity = '0.85'"
+            />
+          </div>
+
+          <form action="/logout" method="GET">
+            <button type="submit" class="logout-btn">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              Sign Out
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <!-- ── Main ───────────────────────────────────── -->
+      <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+        <!-- Header -->
+        <header class="shadow-sm z-10">
+          <div class="px-4 sm:px-6 py-4">
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3 min-w-0">
+                <button
+                  id="openSidebar"
+                  class="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 flex-shrink-0"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                </button>
+                <!-- Back button -->
+                <a
+                  href="/admin/employees"
+                  class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition flex-shrink-0"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </a>
+                <div class="min-w-0">
+                  <h2 class="text-lg sm:text-xl font-bold text-slate-900 truncate">
+                    Weekly Status Reports
+                  </h2>
+                  <p class="text-xs text-slate-400 hidden sm:block mt-0.5">
+                    <%= employee.name %> &bull;
+                    <span style="font-family: 'JetBrains Mono', monospace"
+                      ><%= employee.userId %></span
+                    >
+                  </p>
+                </div>
+              </div>
+
+              <!-- Avatar -->
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <div
+                  class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-50 cursor-pointer transition"
+                >
+                  <div
+                    class="w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+                    style="background: linear-gradient(135deg, #4f46e5, #7c3aed)"
+                  >
+                    <%= user.name.charAt(0).toUpperCase() %>
+                  </div>
+                  <div class="hidden sm:block">
+                    <p class="text-sm font-semibold text-slate-800 leading-tight">
+                      <%= user.name %>
+                    </p>
+                    <p class="text-xs text-slate-400"><%= user.userId %></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Content -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6">
+          <!-- Toolbar -->
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <!-- Employee chip -->
+            <div class="emp-chip">
+              <div class="emp-avatar"><%= employee.name.charAt(0).toUpperCase() %></div>
+              <div>
+                <p class="text-sm font-bold text-slate-800 leading-tight"><%= employee.name %></p>
+                <p class="text-xs text-slate-400" style="font-family: 'JetBrains Mono', monospace">
+                  <%= employee.userId %>
+                </p>
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex items-center gap-2">
+              <a href="/admin/employees/<%= employee._id %>" class="btn-action btn-add">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+                Add Report
+              </a>
+              <button onclick="openExportModal()" class="btn-action btn-export">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                Export Excel
+              </button>
+            </div>
+          </div>
+
+          <!-- Report Table -->
+          <div class="table-card">
+            <div class="overflow-x-auto">
+              <table id="reportTable">
+                <thead>
+                  <tr>
+                    <th class="col-week text-left">Week</th>
+                    <th class="col-submitted text-left">Submitted</th>
+                    <th class="col-task text-left">Task</th>
+                    <th class="col-desc text-left">Description</th>
+                    <th class="col-status text-left">Status</th>
+                    <th class="col-leave text-left">Leave Info</th>
+                    <th class="col-attend text-left">Attendance Events</th>
+                    <th class="col-actions text-center">Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <% reports.forEach((report, reportIndex) => { %> <% const isAlt = reportIndex % 2
+                  !== 0; %> <% if (report.tasks.length === 0) { %>
+                  <!-- No tasks row -->
+                  <tr class="<%= isAlt ? 'row-alt' : '' %>">
+                    <td class="col-week">
+                      <span class="week-badge week-badge-empty"><%= report.duration %></span>
+                    </td>
+                    <td class="col-submitted">
+                      <span class="submitted-date"
+                        ><%= new Date(report.createdAt).toDateString() %></span
+                      >
+                    </td>
+                    <td class="col-task" colspan="3" style="color: #94a3b8; font-style: italic">
+                      No tasks
+                    </td>
+                    <td class="col-leave">
+                      <% if (report.leaveInfo && report.leaveInfo.length) { %>
+                      <ul class="cell-list">
+                        <% report.leaveInfo.forEach(l => { %>
+                        <li><span class="dot dot-blue"></span><span><%= l %></span></li>
+                        <% }) %>
+                      </ul>
+                      <% } else { %><span style="color: #cbd5e1">—</span><% } %>
+                    </td>
+                    <td class="col-attend">
+                      <% if (report.attendanceEvents && report.attendanceEvents.length) { %>
+                      <ul class="cell-list">
+                        <% report.attendanceEvents.forEach(ev => { %>
+                        <li>
+                          <span
+                            class="dot <%= ev.type === 'early-leave' ? 'dot-orange' : 'dot-purple' %>"
+                          ></span>
+                          <span>
+                            <span
+                              style="font-weight:600;color:<%= ev.type === 'early-leave' ? '#ea580c' : '#7c3aed' %>;"
+                            >
+                              <%= ev.type === 'early-leave' ? 'Early Leave' : 'Late Arrival' %> </span
+                            ><br />
+                            <%= new Date(ev.date).toLocaleDateString('en-US', { month: 'short', day:
+                            'numeric' }) %> at <%= ev.time %> <% if (ev.reason) { %><br /><span
+                              style="font-style: italic; color: #94a3b8"
+                              >"<%= ev.reason %>"</span
+                            ><% } %>
+                          </span>
+                        </li>
+                        <% }) %>
+                      </ul>
+                      <% } else { %><span style="color: #cbd5e1">—</span><% } %>
+                    </td>
+                    <td class="col-actions">
+                      <div class="flex flex-col gap-1.5">
+                        <a
+                          href="/admin/employees/<%= employee._id %>/reports/<%= report._id %>/edit"
+                          class="tbl-btn tbl-btn-edit"
+                        >
+                          <svg
+                            class="w-3.5 h-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
+                          </svg>
+                          Edit
+                        </a>
+                        <button
+                          onclick="deleteReport('<%= report._id %>')"
+                          class="tbl-btn tbl-btn-delete"
+                        >
+                          <svg
+                            class="w-3.5 h-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <% } else { %> <% report.tasks.forEach((task, index) => { %>
+                  <tr class="<%= isAlt ? 'row-alt' : '' %>">
+                    <% if (index === 0) { %>
+                    <td
+                      rowspan="<%= report.tasks.length %>"
+                      class="col-week"
+                      style="vertical-align: top"
+                    >
+                      <span class="week-badge"><%= report.duration %></span>
+                    </td>
+                    <td
+                      rowspan="<%= report.tasks.length %>"
+                      class="col-submitted"
+                      style="vertical-align: top"
+                    >
+                      <span class="submitted-date"
+                        ><%= new Date(report.createdAt).toDateString() %></span
+                      >
+                    </td>
+                    <% } %>
+
+                    <!-- Task -->
+                    <td class="col-task" style="font-weight: 600; color: #1e293b">
+                      <%= task.taskName %>
+                    </td>
+
+                    <!-- Description -->
+                    <td class="col-desc" style="color: #64748b"><%= task.description || '—' %></td>
+
+                    <!-- Status -->
+                    <td class="col-status">
+                      <% let sc = 'status-pending', sl = 'Pending'; if (task.status === 'completed')
+                      { sc = 'status-completed'; sl = 'Completed'; } if (task.status ===
+                      'in-progress') { sc = 'status-in-progress'; sl = 'In Progress'; } %>
+                      <span class="status-badge <%= sc %>">
+                        <% if (task.status === 'completed') { %>
+                        <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fill-rule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                        <% } else if (task.status === 'in-progress') { %>
+                        <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                        <% } else { %>
+                        <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 9.586V6z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                        <% } %> <%= sl %>
+                      </span>
+                    </td>
+
+                    <% if (index === 0) { %>
+                    <!-- Leave Info -->
+                    <td
+                      rowspan="<%= report.tasks.length %>"
+                      class="col-leave"
+                      style="vertical-align: top"
+                    >
+                      <% if (report.leaveInfo && report.leaveInfo.length) { %>
+                      <ul class="cell-list">
+                        <% report.leaveInfo.forEach(l => { %>
+                        <li><span class="dot dot-blue"></span><span><%= l %></span></li>
+                        <% }) %>
+                      </ul>
+                      <% } else { %><span style="color: #cbd5e1">—</span><% } %>
+                    </td>
+
+                    <!-- Attendance Events -->
+                    <td
+                      rowspan="<%= report.tasks.length %>"
+                      class="col-attend"
+                      style="vertical-align: top"
+                    >
+                      <% if (report.attendanceEvents && report.attendanceEvents.length) { %>
+                      <ul class="cell-list">
+                        <% report.attendanceEvents.forEach(ev => { %>
+                        <li>
+                          <span
+                            class="dot <%= ev.type === 'early-leave' ? 'dot-orange' : 'dot-purple' %>"
+                          ></span>
+                          <span>
+                            <span
+                              style="font-weight:600;color:<%= ev.type === 'early-leave' ? '#ea580c' : '#7c3aed' %>;"
+                            >
+                              <%= ev.type === 'early-leave' ? 'Early Leave' : 'Late Arrival' %> </span
+                            ><br />
+                            <%= new Date(ev.date).toLocaleDateString('en-US', { month: 'short', day:
+                            'numeric', year: 'numeric' }) %> at <%= ev.time %> <% if (ev.reason) {
+                            %><br /><span style="font-style: italic; color: #94a3b8"
+                              >"<%= ev.reason %>"</span
+                            ><% } %>
+                          </span>
+                        </li>
+                        <% }) %>
+                      </ul>
+                      <% } else { %><span style="color: #cbd5e1">—</span><% } %>
+                    </td>
+
+                    <!-- Actions -->
+                    <td
+                      rowspan="<%= report.tasks.length %>"
+                      class="col-actions"
+                      style="vertical-align: top"
+                    >
+                      <div class="flex flex-col gap-1.5">
+                        <a
+                          href="/admin/employees/<%= employee._id %>/reports/<%= report._id %>/edit"
+                          class="tbl-btn tbl-btn-edit"
+                        >
+                          <svg
+                            class="w-3.5 h-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
+                          </svg>
+                          Edit
+                        </a>
+                        <button
+                          onclick="deleteReport('<%= report._id %>')"
+                          class="tbl-btn tbl-btn-delete"
+                        >
+                          <svg
+                            class="w-3.5 h-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                    <% } %>
+                  </tr>
+                  <% }) %> <% } %> <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Hidden data store -->
+          <div
+            id="reportDataStore"
+            data-reports='<%- JSON.stringify(reports.map(r => ({
+        week:      r.duration,
+        submitted: new Date(r.createdAt).toDateString(),
+        tasks:     r.tasks.map(t => ({
+          taskName:    t.taskName,
+          description: t.description || "",
+          status:      t.status
+        })),
+        leaveInfo: r.leaveInfo || [],
+        attendanceEvents: (r.attendanceEvents || []).map(ev => ({
+          type:   ev.type,
+          date:   new Date(ev.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+          time:   ev.time,
+          reason: ev.reason || ""
+        }))
+      }))) %>'
+            style="display: none"
+          ></div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ EXPORT MODAL ═══════════════════ -->
+    <div id="exportModal" class="modal-overlay hidden">
+      <div class="modal-box w-full max-w-md" id="exportModalContent">
+        <div class="modal-header">
+          <div class="flex items-center gap-3">
+            <div
+              style="
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+            </div>
+            <div>
+              <p class="text-white font-semibold text-base">Export to Excel</p>
+              <p style="color: rgba(255, 255, 255, 0.45); font-size: 0.78rem">
+                Choose export options
+              </p>
+            </div>
+          </div>
+          <button onclick="closeExportModal()" class="modal-close-btn">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div class="p-6 space-y-4 overflow-y-auto" style="max-height: calc(90vh - 140px)">
+          <div>
+            <p class="field-label mb-3">Export Type</p>
+            <div class="space-y-2">
+              <label class="export-radio-card">
+                <input
+                  type="radio"
+                  name="exportType"
+                  value="all"
+                  checked
+                  class="mt-0.5 h-4 w-4 flex-shrink-0"
+                  style="accent-color: var(--indigo)"
+                />
+                <div>
+                  <p class="text-sm font-semibold text-slate-800">All Weeks</p>
+                  <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px">
+                    Export complete report history
+                  </p>
+                </div>
+              </label>
+
+              <label class="export-radio-card">
+                <input
+                  type="radio"
+                  name="exportType"
+                  value="particular"
+                  class="mt-0.5 h-4 w-4 flex-shrink-0"
+                  style="accent-color: var(--indigo)"
+                  onchange="toggleWeekInputs()"
+                />
+                <div>
+                  <p class="text-sm font-semibold text-slate-800">Particular Week</p>
+                  <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px">
+                    Export data for a specific week
+                  </p>
+                </div>
+              </label>
+
+              <label class="export-radio-card">
+                <input
+                  type="radio"
+                  name="exportType"
+                  value="range"
+                  class="mt-0.5 h-4 w-4 flex-shrink-0"
+                  style="accent-color: var(--indigo)"
+                  onchange="toggleWeekInputs()"
+                />
+                <div>
+                  <p class="text-sm font-semibold text-slate-800">Range of Weeks</p>
+                  <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px">
+                    Export data between two weeks
+                  </p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div id="weekSelectionArea" class="hidden space-y-3">
+            <div id="particularWeekInput" class="hidden">
+              <label class="field-label">Select Week</label>
+              <select id="particularWeek" class="field-select">
+                <option value="">Choose a week...</option>
+              </select>
+            </div>
+            <div id="rangeWeekInputs" class="hidden space-y-3">
+              <div>
+                <label class="field-label">From Week</label>
+                <select id="fromWeek" class="field-select">
+                  <option value="">Choose start week...</option>
+                </select>
+              </div>
+              <div>
+                <label class="field-label">To Week</label>
+                <select id="toWeek" class="field-select">
+                  <option value="">Choose end week...</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-3"
+        >
+          <button onclick="closeExportModal()" class="btn-ghost">Cancel</button>
+          <button onclick="executeExport()" class="btn-primary">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              />
+            </svg>
+            Export
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ DELETE MODAL ═══════════════════ -->
+    <div id="deleteModal" class="modal-overlay hidden">
+      <div class="modal-box w-full max-w-sm" id="deleteModalContent">
+        <div class="p-6 text-center border-b border-slate-100">
+          <div
+            style="
+              width: 56px;
+              height: 56px;
+              border-radius: 14px;
+              background: rgba(244, 63, 94, 0.08);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto;
+            "
+          >
+            <svg
+              class="w-6 h-6"
+              style="color: #f43f5e"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4c-.77-1.33-2.69-1.33-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"
+              />
+            </svg>
+          </div>
+          <h3 class="mt-4 text-lg font-bold text-slate-900">Delete Weekly Report</h3>
+          <p class="mt-1 text-sm text-slate-500">
+            Are you sure? This action
+            <span style="color: #f43f5e; font-weight: 700">cannot be undone</span>.
+          </p>
+        </div>
+
+        <div class="px-6 py-5 flex justify-end gap-3">
+          <button onclick="closeDeleteModal()" class="btn-ghost">Cancel</button>
+          <button id="confirmDeleteBtn" class="btn-danger">
+            <svg
+              id="deleteLoader"
+              class="hidden animate-spin w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+            <span id="deleteBtnText">Delete Report</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ JS ═══════════════════ -->
+    <script>
+      // ── Mobile sidebar ──────────────────────────────────────
+      const openSidebar = document.getElementById('openSidebar');
+      const closeSidebar = document.getElementById('closeSidebar');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileMenuOverlay');
+      openSidebar.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        overlay.classList.remove('hidden');
+      });
+      closeSidebar.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.add('hidden');
+      });
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.add('hidden');
+      });
+
+      // ── Delete modal ───────────────────────────────────────
+      let deleteReportId = null;
+
+      function deleteReport(id) {
+        deleteReportId = id;
+        const modal = document.getElementById('deleteModal');
+        const box = document.getElementById('deleteModalContent');
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => box.classList.add('open'));
+      }
+
+      function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        const box = document.getElementById('deleteModalContent');
+        box.classList.remove('open');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+          deleteReportId = null;
+        }, 200);
+      }
+
+      async function confirmDelete() {
+        if (!deleteReportId) return;
+        const btnText = document.getElementById('deleteBtnText');
+        const loader = document.getElementById('deleteLoader');
+        btnText.textContent = 'Deleting…';
+        loader.classList.remove('hidden');
+        await new Promise((r) => setTimeout(r, 1500));
+        try {
+          const res = await fetch(
+            `/admin/employees/<%= employee._id %>/reports/${deleteReportId}/delete`,
+            {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+            },
+          );
+          const data = await res.json();
+          if (data.success) {
+            closeDeleteModal();
+            location.reload();
+          } else alert('Delete failed');
+        } catch (err) {
+          console.error(err);
+          alert('Server error');
+        } finally {
+          btnText.textContent = 'Delete Report';
+          loader.classList.add('hidden');
+        }
+      }
+
+      document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+
+      // Close on overlay click / Escape
+      document.getElementById('deleteModal').addEventListener('click', function (e) {
+        if (e.target === this) closeDeleteModal();
+      });
+      document.getElementById('exportModal').addEventListener('click', function (e) {
+        if (e.target === this) closeExportModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (!document.getElementById('deleteModal').classList.contains('hidden'))
+            closeDeleteModal();
+          if (!document.getElementById('exportModal').classList.contains('hidden'))
+            closeExportModal();
+        }
+      });
+
+      // ── Export modal ───────────────────────────────────────
+      function getAllWeeks() {
+        return REPORT_DATA.map((r) => r.week);
+      }
+
+      function populateWeekDropdowns() {
+        const weeks = getAllWeeks();
+        [
+          ['particularWeek', 'Choose a week...'],
+          ['fromWeek', 'Choose start week...'],
+          ['toWeek', 'Choose end week...'],
+        ].forEach(([id, ph]) => {
+          const sel = document.getElementById(id);
+          sel.innerHTML = `<option value="">${ph}</option>`;
+          weeks.forEach((w) => (sel.innerHTML += `<option value="${w}">${w}</option>`));
+        });
+      }
+
+      function openExportModal() {
+        populateWeekDropdowns();
+        const modal = document.getElementById('exportModal');
+        const box = document.getElementById('exportModalContent');
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => box.classList.add('open'));
+      }
+
+      function closeExportModal() {
+        const modal = document.getElementById('exportModal');
+        const box = document.getElementById('exportModalContent');
+        box.classList.remove('open');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+          document.querySelector('input[name="exportType"][value="all"]').checked = true;
+          document.getElementById('weekSelectionArea').classList.add('hidden');
+          document.getElementById('particularWeekInput').classList.add('hidden');
+          document.getElementById('rangeWeekInputs').classList.add('hidden');
+        }, 200);
+      }
+
+      function toggleWeekInputs() {
+        const type = document.querySelector('input[name="exportType"]:checked').value;
+        document.getElementById('weekSelectionArea').classList.toggle('hidden', type === 'all');
+        document
+          .getElementById('particularWeekInput')
+          .classList.toggle('hidden', type !== 'particular');
+        document.getElementById('rangeWeekInputs').classList.toggle('hidden', type !== 'range');
+      }
+
+      function executeExport() {
+        const type = document.querySelector('input[name="exportType"]:checked').value;
+        if (type === 'all') {
+          exportToExcel();
+        } else if (type === 'particular') {
+          const w = document.getElementById('particularWeek').value;
+          if (!w) return alert('Please select a week');
+          exportToExcel(w);
+        } else {
+          const from = document.getElementById('fromWeek').value;
+          const to = document.getElementById('toWeek').value;
+          if (!from || !to) return alert('Please select both start and end weeks');
+          exportToExcel(null, from, to);
+        }
+        closeExportModal();
+      }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+
+    <script>
+      const REPORT_DATA = JSON.parse(document.getElementById('reportDataStore').dataset.reports);
+
+      async function exportToExcel(particularWeek = null, fromWeek = null, toWeek = null) {
+        const employeeName = '<%= employee.name %>';
+
+        let data = REPORT_DATA;
+        if (particularWeek) {
+          data = data.filter((r) => r.week === particularWeek);
+        } else if (fromWeek && toWeek) {
+          const allWeeks = getAllWeeks();
+          const fi = allWeeks.indexOf(fromWeek),
+            ti = allWeeks.indexOf(toWeek);
+          if (fi === -1 || ti === -1) return alert('Selected weeks not found.');
+          const start = Math.min(fi, ti),
+            end = Math.max(fi, ti);
+          const range = allWeeks.slice(start, end + 1);
+          data = data.filter((r) => range.includes(r.week));
+        }
+
+        if (data.length === 0) return alert('No data found for selected range.');
+
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Weekly Reports');
+
+        let titleText = `Weekly Status Reports - ${employeeName}`;
+        if (particularWeek) titleText += ` (${particularWeek})`;
+        else if (fromWeek && toWeek) titleText += ` (${fromWeek} to ${toWeek})`;
+
+        worksheet.mergeCells('A1:G1');
+        const titleRow = worksheet.getRow(1);
+        titleRow.height = 40;
+        const titleCell = titleRow.getCell(1);
+        titleCell.value = titleText;
+        titleCell.font = { name: 'Calibri', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+        titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1E3A5F' } };
+        titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+        const headers = [
+          'Week',
+          'Submitted',
+          'Task',
+          'Description',
+          'Status',
+          'Leave Info',
+          'Attendance Events',
+        ];
+        const headerRow = worksheet.getRow(3);
+        headerRow.height = 28;
+        headers.forEach((h, i) => {
+          const cell = headerRow.getCell(i + 1);
+          cell.value = h;
+          cell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFFFFFFF' } };
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF059669' } };
+          cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+        });
+
+        worksheet.columns = [
+          { key: 'week', width: 8 },
+          { key: 'submitted', width: 18 },
+          { key: 'task', width: 32 },
+          { key: 'desc', width: 42 },
+          { key: 'status', width: 14 },
+          { key: 'leave', width: 45 },
+          { key: 'attendance', width: 45 },
+        ];
+
+        let currentRow = 4;
+
+        const borderStyle = {
+          top: { style: 'thin', color: { argb: 'FFD1D5DB' } },
+          left: { style: 'thin', color: { argb: 'FFD1D5DB' } },
+          bottom: { style: 'thin', color: { argb: 'FFD1D5DB' } },
+          right: { style: 'thin', color: { argb: 'FFD1D5DB' } },
+        };
+        const fillEven = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFFFF' } };
+        const fillOdd = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9FAFB' } };
+
+        data.forEach((report, reportIndex) => {
+          const rowCount = Math.max(report.tasks.length, 1);
+          const startRow = currentRow;
+          const fill = reportIndex % 2 === 0 ? fillEven : fillOdd;
+
+          const leaveText =
+            report.leaveInfo.length > 0
+              ? report.leaveInfo.map((l, i) => `${i + 1}. ${l}`).join('\n')
+              : '—';
+
+          const attendText =
+            report.attendanceEvents.length > 0
+              ? report.attendanceEvents
+                  .map((ev, i) => {
+                    const typeLabel = ev.type === 'early-leave' ? 'Early Leave' : 'Late Arrival';
+                    let line = `${i + 1}. ${typeLabel} — ${ev.date} at ${ev.time}`;
+                    if (ev.reason) line += ` (${ev.reason})`;
+                    return line;
+                  })
+                  .join('\n')
+              : '—';
+
+          for (let i = 0; i < rowCount; i++) {
+            const task = report.tasks[i] || null;
+            const row = worksheet.getRow(currentRow);
+            row.height = 22;
+
+            const cellA = row.getCell(1);
+            if (i === 0) cellA.value = report.week;
+            cellA.font = { name: 'Calibri', size: 10, bold: true };
+            cellA.fill = fill;
+            cellA.alignment = { horizontal: 'center', vertical: 'top' };
+            cellA.border = borderStyle;
+
+            const cellB = row.getCell(2);
+            if (i === 0) cellB.value = report.submitted;
+            cellB.font = { name: 'Calibri', size: 10 };
+            cellB.fill = fill;
+            cellB.alignment = { horizontal: 'left', vertical: 'top' };
+            cellB.border = borderStyle;
+
+            const cellC = row.getCell(3);
+            cellC.value = task ? task.taskName : '(No tasks)';
+            cellC.font = { name: 'Calibri', size: 10, bold: !!task };
+            cellC.fill = fill;
+            cellC.alignment = { horizontal: 'left', vertical: 'top', wrapText: true };
+            cellC.border = borderStyle;
+
+            const cellD = row.getCell(4);
+            cellD.value = task ? task.description || '—' : '';
+            cellD.font = { name: 'Calibri', size: 10 };
+            cellD.fill = fill;
+            cellD.alignment = { horizontal: 'left', vertical: 'top', wrapText: true };
+            cellD.border = borderStyle;
+
+            const cellE = row.getCell(5);
+            if (task) {
+              cellE.value =
+                task.status === 'in-progress'
+                  ? 'In Progress'
+                  : task.status === 'completed'
+                    ? 'Completed'
+                    : 'Pending';
+              cellE.fill =
+                task.status === 'completed'
+                  ? { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD1FAE5' } }
+                  : task.status === 'in-progress'
+                    ? { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDBEAFE' } }
+                    : { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF3C7' } };
+              cellE.font = {
+                name: 'Calibri',
+                size: 10,
+                bold: true,
+                color: {
+                  argb:
+                    task.status === 'completed'
+                      ? 'FF065F46'
+                      : task.status === 'in-progress'
+                        ? 'FF1E40AF'
+                        : 'FF92400E',
+                },
+              };
+            } else {
+              cellE.fill = fill;
+              cellE.font = { name: 'Calibri', size: 10 };
+            }
+            cellE.alignment = { horizontal: 'center', vertical: 'top' };
+            cellE.border = borderStyle;
+
+            const cellF = row.getCell(6);
+            if (i === 0) {
+              cellF.value = leaveText;
+              cellF.alignment = { horizontal: 'left', vertical: 'top', wrapText: true };
+            }
+            cellF.font = { name: 'Calibri', size: 10 };
+            cellF.fill = fill;
+            cellF.border = borderStyle;
+
+            const cellG = row.getCell(7);
+            if (i === 0) {
+              cellG.value = attendText;
+              cellG.alignment = { horizontal: 'left', vertical: 'top', wrapText: true };
+            }
+            cellG.font = { name: 'Calibri', size: 10 };
+            cellG.fill = fill;
+            cellG.border = borderStyle;
+
+            currentRow++;
+          }
+
+          if (rowCount > 1) {
+            ['A', 'B', 'F', 'G'].forEach((col) => {
+              worksheet.mergeCells(`${col}${startRow}:${col}${startRow + rowCount - 1}`);
+              const mergedCell = worksheet.getCell(`${col}${startRow}`);
+              mergedCell.alignment = {
+                horizontal: col === 'A' ? 'center' : 'left',
+                vertical: 'top',
+                wrapText: true,
+              };
+            });
+          }
+
+          if (rowCount === 1) {
+            const maxLines = Math.max(
+              leaveText.split('\n').length,
+              attendText.split('\n').length,
+              1,
+            );
+            worksheet.getRow(startRow).height = Math.max(22, maxLines * 16);
+          }
+        });
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${employeeName.replace(/\s+/g, '-')}-Weekly-Reports.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>

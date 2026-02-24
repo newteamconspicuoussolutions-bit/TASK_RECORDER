@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Employee Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #4f46e5;
+        --indigo-dark: #3730a3;
+        --indigo-light: #818cf8;
+        --violet: #7c3aed;
+        --emerald: #10b981;
+        --rose: #f43f5e;
+        --amber: #f59e0b;
+        --sidebar-bg: #0f0e17;
+        --sidebar-border: rgba(255, 255, 255, 0.06);
+        --body-bg: #f0f0f7;
+        --sidebar-width: 240px;
+        --sidebar-collapsed-width: 68px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        font-family: 'Sora', sans-serif;
+        background: var(--body-bg);
+        background-image:
+          radial-gradient(ellipse at 20% 0%, rgba(79, 70, 229, 0.06) 0%, transparent 60%),
+          radial-gradient(ellipse at 80% 100%, rgba(124, 58, 237, 0.05) 0%, transparent 60%);
+      }
+
+      /* ── App shell ───────────────────────────── */
+      .app-shell {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* ── Sidebar ─────────────────────────────── */
+      aside {
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--sidebar-border);
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 30;
+        width: var(--sidebar-width);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        transition: width 0.3s ease;
+        overflow: hidden;
+      }
+
+      .main-area {
+        margin-left: var(--sidebar-width);
+        transition: margin-left 0.3s ease;
+        flex: 1;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-width: 0;
+      }
+
+      /* ── Collapsed state ─────────────────────── */
+      aside.collapsed {
+        width: var(--sidebar-collapsed-width);
+      }
+      aside.collapsed + .main-area,
+      aside.collapsed ~ .main-area {
+        margin-left: var(--sidebar-collapsed-width);
+      }
+
+      /* Hide text elements when collapsed */
+      aside.collapsed .sidebar-text,
+      aside.collapsed .sidebar-label,
+      aside.collapsed .user-info,
+      aside.collapsed .brand-text,
+      aside.collapsed .logout-text,
+      aside.collapsed .footer-copy {
+        display: none;
+      }
+
+      /* Collapsed: stack brand-wrap vertically, centered */
+      aside.collapsed .brand-wrap {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 0;
+      }
+
+      aside.collapsed .user-chip {
+        justify-content: center;
+        padding: 8px 0;
+        background: transparent;
+        border-color: transparent;
+        gap: 0;
+      }
+      aside.collapsed .nav-btn {
+        justify-content: center;
+        padding: 10px 0;
+        gap: 0;
+        width: 100%;
+      }
+      aside.collapsed .nav-btn::before {
+        display: none;
+      }
+      aside.collapsed .nav-btn:hover {
+        transform: none;
+      }
+      aside.collapsed .logout-btn {
+        justify-content: center;
+        padding: 10px 0;
+        gap: 0;
+        width: 100%;
+      }
+      aside.collapsed .sidebar-top-section {
+        padding: 14px 10px;
+        align-items: center;
+      }
+      aside.collapsed nav {
+        padding: 12px 10px;
+      }
+      aside.collapsed .sidebar-bottom-section {
+        padding: 12px 10px;
+      }
+
+      /* Tooltips when collapsed */
+      aside.collapsed [data-tip] {
+        position: relative;
+      }
+      aside.collapsed [data-tip]::after {
+        content: attr(data-tip);
+        position: absolute;
+        left: calc(100% + 10px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: #1e1b4b;
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 7px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+        font-family: 'Sora', sans-serif;
+      }
+      aside.collapsed [data-tip]:hover::after {
+        opacity: 1;
+      }
+
+      /* ── Sidebar toggle button ───────────────── */
+      .sidebar-toggle {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background 0.15s;
+        /* NO position:absolute — stays in flow */
+      }
+      .sidebar-toggle:hover {
+        background: rgba(255, 255, 255, 0.16);
+      }
+      .sidebar-toggle svg {
+        color: rgba(255, 255, 255, 0.55);
+        transition: transform 0.3s ease;
+        display: block;
+        flex-shrink: 0;
+      }
+      /* Arrow flips when collapsed */
+      aside.collapsed .sidebar-toggle svg {
+        transform: rotate(180deg);
+      }
+
+      /* ── Sidebar nav scroll ──────────────────── */
+      aside nav {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      /* ── Sidebar bottom ──────────────────────── */
+      .sidebar-bottom-section {
+        flex-shrink: 0;
+      }
+
+      /* Mobile backdrop */
+      #sidebarBackdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 14, 23, 0.6);
+        backdrop-filter: blur(2px);
+        z-index: 40;
+      }
+      #sidebarBackdrop.active {
+        display: block;
+      }
+
+      /* ── Mobile overrides ────────────────────── */
+      @media (max-width: 1023px) {
+        aside {
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+          width: var(--sidebar-width) !important;
+          z-index: 50;
+        }
+        aside.mobile-open {
+          transform: translateX(0);
+        }
+        aside.collapsed {
+          width: var(--sidebar-width) !important;
+        }
+        /* Restore all hidden elements on mobile */
+        aside.collapsed .sidebar-text,
+        aside.collapsed .sidebar-label,
+        aside.collapsed .user-info,
+        aside.collapsed .brand-text,
+        aside.collapsed .logout-text,
+        aside.collapsed .footer-copy {
+          display: unset;
+        }
+        aside.collapsed .brand-wrap {
+          flex-direction: row;
+          justify-content: flex-start;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+        aside.collapsed .user-chip {
+          justify-content: flex-start;
+          padding: 10px 12px;
+          background: rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.08);
+          gap: 10px;
+        }
+        aside.collapsed .nav-btn {
+          justify-content: flex-start;
+          padding: 10px 14px;
+          gap: 11px;
+        }
+        aside.collapsed .logout-btn {
+          justify-content: flex-start;
+          padding: 10px 14px;
+          gap: 11px;
+        }
+        aside.collapsed .sidebar-top-section,
+        aside.collapsed nav,
+        aside.collapsed .sidebar-bottom-section {
+          padding: unset;
+        }
+        /* Hide toggle on mobile — hamburger handles it */
+        .sidebar-toggle {
+          display: none;
+        }
+        .main-area {
+          margin-left: 0 !important;
+        }
+      }
+
+      /* ── Brand ───────────────────────────────── */
+      .brand-logo {
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        border-radius: 12px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .brand-wrap {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+      }
+
+      /* ── User chip ───────────────────────────── */
+      .user-chip {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+      }
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.875rem;
+        flex-shrink: 0;
+      }
+
+      /* ── Nav buttons ─────────────────────────── */
+      .nav-btn {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        font-family: 'Sora', sans-serif;
+        white-space: nowrap;
+      }
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.9);
+        transform: translateX(3px);
+      }
+      .nav-btn.active {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.25), rgba(124, 58, 237, 0.15));
+        color: #fff;
+        border: 1px solid rgba(79, 70, 229, 0.3);
+      }
+      .nav-btn.active svg {
+        color: var(--indigo-light);
+      }
+      .nav-btn.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 60%;
+        background: linear-gradient(to bottom, var(--indigo-light), var(--violet));
+        border-radius: 0 3px 3px 0;
+      }
+
+      /* ── Logout ──────────────────────────────── */
+      .logout-btn {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        width: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: 'Sora', sans-serif;
+        white-space: nowrap;
+      }
+      .logout-btn:hover {
+        background: rgba(244, 63, 94, 0.12);
+        color: #f87171;
+      }
+
+      /* Hamburger (mobile only) */
+      .hamburger-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: 1.5px solid rgba(79, 70, 229, 0.15);
+        cursor: pointer;
+        color: #475569;
+        flex-shrink: 0;
+        transition: all 0.15s;
+        margin-right: 4px;
+      }
+      .hamburger-btn:hover {
+        background: rgba(79, 70, 229, 0.06);
+        color: var(--indigo);
+      }
+      @media (max-width: 1023px) {
+        .hamburger-btn {
+          display: flex;
+        }
+      }
+
+      /* ── Scrollbar ───────────────────────────── */
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 99px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      /* ── Top bar ─────────────────────────────── */
+      .topbar {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(79, 70, 229, 0.08);
+        flex-shrink: 0;
+      }
+
+      /* ── Scrollable content area ─────────────── */
+      .content-scroll {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      /* ── Form card ───────────────────────────── */
+      .form-card {
+        background: #fff;
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.04),
+          0 8px 32px rgba(79, 70, 229, 0.04);
+        overflow: hidden;
+      }
+      .form-card-header {
+        padding: 22px 28px;
+        background: linear-gradient(135deg, #0f0e17, #1e1b4b);
+      }
+
+      .section-title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #475569;
+        margin-bottom: 14px;
+      }
+
+      .field-label {
+        display: block;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #64748b;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .field-input {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.84rem;
+        font-family: 'Sora', sans-serif;
+        outline: none;
+        color: #0f172a;
+        background: #f8fafc;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .field-input:focus {
+        border-color: var(--indigo);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        background: #fff;
+      }
+      .field-input[readonly] {
+        color: #64748b;
+        cursor: default;
+      }
+      .field-input[readonly]:focus {
+        border-color: #e2e8f0;
+        box-shadow: none;
+        background: #f8fafc;
+      }
+
+      .field-select {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.84rem;
+        font-family: 'Sora', sans-serif;
+        outline: none;
+        color: #0f172a;
+        background: #f8fafc;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        cursor: pointer;
+      }
+      .field-select:focus {
+        border-color: var(--indigo);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        background: #fff;
+      }
+
+      .field-textarea {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.84rem;
+        font-family: 'Sora', sans-serif;
+        outline: none;
+        color: #0f172a;
+        background: #f8fafc;
+        resize: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .field-textarea:focus {
+        border-color: var(--indigo);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        background: #fff;
+      }
+
+      .task-table-wrap {
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .task-table-wrap table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .task-table-wrap thead tr {
+        background: linear-gradient(135deg, #0f0e17, #1e1b4b);
+      }
+      .task-table-wrap thead th {
+        padding: 11px 14px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.55);
+        text-align: left;
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .task-table-wrap thead th:last-child {
+        border-right: none;
+      }
+      .task-table-wrap tbody td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        border-right: 1px solid #f8fafc;
+      }
+      .task-table-wrap tbody td:last-child {
+        border-right: none;
+      }
+      .task-table-wrap tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .task-table-wrap tbody tr {
+        transition: background 0.12s;
+      }
+      .task-table-wrap tbody tr:hover {
+        background: rgba(79, 70, 229, 0.02);
+      }
+
+      .sub-card {
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 18px;
+      }
+
+      .half-day-card {
+        padding: 10px 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .half-day-card:has(input:checked) {
+        border-color: var(--indigo);
+        background: rgba(79, 70, 229, 0.05);
+      }
+
+      .entry-chip {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        padding: 8px 10px;
+      }
+      .entry-chip-remove {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f43f5e;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: background 0.12s;
+      }
+      .entry-chip-remove:hover {
+        background: rgba(244, 63, 94, 0.08);
+      }
+
+      .day-count {
+        padding: 7px 12px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        font-size: 0.78rem;
+        color: #475569;
+        margin-top: 10px;
+      }
+
+      .btn-primary {
+        padding: 9px 22px;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition:
+          opacity 0.15s,
+          box-shadow 0.15s;
+        box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+      }
+      .btn-primary:hover {
+        opacity: 0.9;
+        box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4);
+      }
+
+      .btn-add {
+        padding: 7px 16px;
+        background: rgba(79, 70, 229, 0.08);
+        color: var(--indigo);
+        border: 1px solid rgba(79, 70, 229, 0.2);
+        border-radius: 9px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s;
+      }
+      .btn-add:hover {
+        background: rgba(79, 70, 229, 0.14);
+      }
+
+      .btn-add-task {
+        padding: 8px 18px;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: opacity 0.15s;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+      }
+      .btn-add-task:hover {
+        opacity: 0.9;
+      }
+
+      #weekRangeText {
+        font-size: 0.72rem;
+        color: var(--indigo);
+        margin-top: 4px;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Mobile backdrop -->
+    <div id="sidebarBackdrop" onclick="closeMobileSidebar()"></div>
+
+    <div class="app-shell">
+      <!-- ── Sidebar ─────────────────────────── -->
+      <aside id="sidebar">
+        <!-- Brand + User (fixed top section) -->
+        <div
+          class="sidebar-top-section p-5 border-b flex-shrink-0"
+          style="border-color: var(--sidebar-border)"
+        >
+          <!-- Brand row — toggle lives here as last flex item -->
+          <div class="brand-wrap">
+            <div class="brand-logo flex-shrink-0">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </div>
+            <!-- Brand text — hidden when collapsed -->
+            <div class="brand-text min-w-0 flex-1">
+              <p class="text-white font-bold text-base leading-tight">Task Recorder</p>
+              <p class="text-xs" style="color: rgba(255, 255, 255, 0.35)">Weekly Reports</p>
+            </div>
+            <!-- Toggle button — always last in row; hidden on mobile via CSS -->
+            <button
+              class="sidebar-toggle"
+              onclick="toggleSidebar()"
+              aria-label="Toggle sidebar"
+              data-tip="Collapse"
+            >
+              <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- User chip -->
+          <div class="user-chip">
+            <div class="user-avatar flex-shrink-0"><%= user.name.charAt(0).toUpperCase() %></div>
+            <div class="user-info min-w-0 flex-1">
+              <p class="text-white font-semibold text-sm truncate leading-tight">
+                <%= user.name %>
+              </p>
+              <p
+                class="text-xs capitalize"
+                style="color: rgba(255, 255, 255, 0.35); margin-top: 2px"
+              >
+                <%= user.role %>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nav (scrollable if many items) -->
+        <nav class="p-4 space-y-1">
+          <p
+            class="sidebar-label text-xs font-semibold uppercase tracking-widest mb-3 px-2"
+            style="color: rgba(255, 255, 255, 0.2)"
+          >
+            Navigation
+          </p>
+
+          <button id="showReportsBtn" onclick="showReports()" class="nav-btn" data-tip="My Reports">
+            <svg
+              class="w-4 h-4 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            <span class="sidebar-text">My Reports</span>
+          </button>
+
+          <button
+            id="addReportBtn"
+            onclick="showNewReport()"
+            class="nav-btn active"
+            data-tip="New Report"
+          >
+            <svg
+              class="w-4 h-4 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <span class="sidebar-text">New Report</span>
+          </button>
+
+          <div class="my-4 border-t" style="border-color: rgba(255, 255, 255, 0.06)"></div>
+        </nav>
+
+        <!-- Logout (always visible at bottom) -->
+        <div
+          class="sidebar-bottom-section p-4 border-t"
+          style="border-color: var(--sidebar-border)"
+        >
+          <!-- Company Logo — hidden when collapsed -->
+          <div class="footer-copy mb-4 px-1">
+            <img
+              src="/images/Full_logo_image.png"
+              alt="Conspicuous Solutions"
+              style="
+                width: 100%;
+                max-width: 180px;
+                height: auto;
+                object-fit: contain;
+                display: block;
+                margin: 0 auto;
+                opacity: 0.85;
+                filter: brightness(1.1);
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '1'"
+              onmouseout="this.style.opacity = '0.85'"
+            />
+          </div>
+
+          <form action="/logout" method="GET">
+            <button type="submit" class="logout-btn" data-tip="Sign Out">
+              <svg
+                class="w-4 h-4 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              <span class="logout-text">Sign Out</span>
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <!-- ── Main area ──────────────────────────── -->
+      <div class="main-area" id="mainArea">
+        <!-- Topbar -->
+        <div class="topbar px-6 sm:px-8 py-4 flex items-center gap-3">
+          <button class="hamburger-btn" onclick="openMobileSidebar()" aria-label="Open menu">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Dashboard</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Manage your weekly status reports</p>
+          </div>
+        </div>
+
+        <!-- Scrollable content -->
+        <div class="content-scroll">
+          <div class="p-4 sm:p-6 lg:p-8">
+            <div id="weeklyReportForm">
+              <form
+                class="form-card max-w-6xl mx-auto"
+                method="POST"
+                action="/employee/create-report"
+              >
+                <div class="form-card-header">
+                  <div class="flex items-center gap-3">
+                    <div
+                      style="
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 10px;
+                        background: rgba(255, 255, 255, 0.12);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                      "
+                    >
+                      <svg
+                        class="w-5 h-5 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="text-white font-semibold text-base">Weekly Status Report</p>
+                      <p style="color: rgba(255, 255, 255, 0.45); font-size: 0.75rem">
+                        Submit your weekly progress and activities
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-6 sm:p-8 space-y-8">
+                  <section>
+                    <p class="section-title">Employee Information</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                      <div>
+                        <label class="field-label">Employee Name</label>
+                        <input type="text" value="<%= user.name %>" readonly class="field-input" />
+                      </div>
+                      <div>
+                        <label class="field-label">Employee ID</label>
+                        <input
+                          type="text"
+                          value="<%= user.userId %>"
+                          readonly
+                          class="field-input"
+                          style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem"
+                        />
+                      </div>
+                      <div>
+                        <label class="field-label"
+                          >Week <span style="color: var(--rose)">*</span></label
+                        >
+                        <input
+                          type="text"
+                          id="weekInput"
+                          name="week"
+                          placeholder="W07"
+                          required
+                          class="field-input"
+                          style="font-family: 'JetBrains Mono', monospace"
+                        />
+                        <p id="weekRangeText" class="hidden"></p>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section>
+                    <div class="flex items-center justify-between mb-4">
+                      <p class="section-title" style="margin-bottom: 0">Tasks</p>
+                      <button type="button" onclick="addTaskRow()" class="btn-add-task">
+                        <svg
+                          class="w-3.5 h-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                        Add Task
+                      </button>
+                    </div>
+                    <div class="task-table-wrap">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Task</th>
+                            <th>Description</th>
+                            <th style="width: 160px">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody id="taskTable">
+                          <tr>
+                            <td>
+                              <input
+                                name="task[]"
+                                placeholder="Enter task name"
+                                required
+                                class="field-input"
+                              />
+                            </td>
+                            <td>
+                              <input
+                                name="description[]"
+                                placeholder="Task description"
+                                required
+                                class="field-input"
+                              />
+                            </td>
+                            <td>
+                              <select name="status[]" required class="field-select">
+                                <option value="">Select Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                              </select>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
+                  <section>
+                    <p class="section-title">Leave Information</p>
+                    <div class="sub-card space-y-4">
+                      <div>
+                        <label class="field-label">Leave Type</label>
+                        <select
+                          id="leaveType"
+                          name="leaveType"
+                          class="field-select"
+                          onchange="handleLeaveTypeChange()"
+                        >
+                          <option value="">No Leave</option>
+                          <option value="single-full">Single Day – Full Day</option>
+                          <option value="single-half">Single Day – Half Day</option>
+                          <option value="multiple">Multiple Days</option>
+                          <option value="office-holiday">Office Holiday</option>
+                        </select>
+                      </div>
+                      <button type="button" onclick="addLeaveEntry()" class="btn-add">
+                        <svg
+                          class="w-3.5 h-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                        Add Leave
+                      </button>
+                      <div id="singleDaySection" class="hidden">
+                        <label class="field-label">Leave Date</label>
+                        <input type="date" id="singleDate" name="singleDate" class="field-input" />
+                      </div>
+                      <div id="halfDaySection" class="hidden">
+                        <label class="field-label">Half Day Period</label>
+                        <div class="grid grid-cols-2 gap-3">
+                          <label class="half-day-card">
+                            <input
+                              type="radio"
+                              name="halfDayPeriod"
+                              value="first-half"
+                              class="sr-only"
+                            />
+                            <p class="text-xs font-bold text-slate-700">First Half</p>
+                            <p style="font-size: 0.68rem; color: #94a3b8; margin-top: 2px">
+                              Morning
+                            </p>
+                          </label>
+                          <label class="half-day-card">
+                            <input
+                              type="radio"
+                              name="halfDayPeriod"
+                              value="second-half"
+                              class="sr-only"
+                            />
+                            <p class="text-xs font-bold text-slate-700">Second Half</p>
+                            <p style="font-size: 0.68rem; color: #94a3b8; margin-top: 2px">
+                              Afternoon
+                            </p>
+                          </label>
+                        </div>
+                      </div>
+                      <div id="multipleDaysSection" class="hidden">
+                        <div class="grid grid-cols-2 gap-4">
+                          <div>
+                            <label class="field-label">From Date</label>
+                            <input
+                              type="date"
+                              id="fromDate"
+                              name="fromDate"
+                              class="field-input"
+                              onchange="calculateLeaveDays()"
+                            />
+                          </div>
+                          <div>
+                            <label class="field-label">To Date</label>
+                            <input
+                              type="date"
+                              id="toDate"
+                              name="toDate"
+                              class="field-input"
+                              onchange="calculateLeaveDays()"
+                            />
+                          </div>
+                        </div>
+                        <div id="leaveDaysCount" class="day-count hidden">
+                          Total Leave Days:
+                          <span id="totalDays" style="font-weight: 800; color: #0f172a">0</span>
+                        </div>
+                      </div>
+                      <div id="officeHolidaySection" class="hidden">
+                        <div class="grid grid-cols-2 gap-4">
+                          <div>
+                            <label class="field-label">Holiday Date</label>
+                            <input
+                              type="date"
+                              id="holidayDate"
+                              name="holidayDate"
+                              class="field-input"
+                            />
+                          </div>
+                          <div>
+                            <label class="field-label">Holiday Name</label>
+                            <input
+                              type="text"
+                              id="holidayName"
+                              name="holidayName"
+                              placeholder="e.g. Diwali, Christmas"
+                              class="field-input"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div id="leaveNotesSection" class="hidden">
+                        <label class="field-label">Reason / Additional Notes</label>
+                        <textarea
+                          id="leaveNotes"
+                          name="leaveNotes"
+                          rows="3"
+                          placeholder="Enter reason for leave or additional details..."
+                          class="field-textarea"
+                        ></textarea>
+                      </div>
+                      <div id="leaveList" class="space-y-2"></div>
+                      <input type="hidden" name="leaveInfo" id="leaveInfoHidden" />
+                    </div>
+                  </section>
+
+                  <section>
+                    <p class="section-title">Early Leave & Late Arrival</p>
+                    <div class="sub-card space-y-4">
+                      <div class="grid grid-cols-2 gap-4">
+                        <div>
+                          <label class="field-label">Type</label>
+                          <select id="attendanceEventType" class="field-select">
+                            <option value="">Select Type</option>
+                            <option value="early-leave">Early Leave</option>
+                            <option value="late-arrival">Late Arrival</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label class="field-label">Date</label>
+                          <input type="date" id="attendanceEventDate" class="field-input" />
+                        </div>
+                      </div>
+                      <div class="grid grid-cols-2 gap-4">
+                        <div>
+                          <label class="field-label">Time</label>
+                          <input type="time" id="attendanceEventTime" class="field-input" />
+                          <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 4px">
+                            Actual departure / arrival time
+                          </p>
+                        </div>
+                        <div>
+                          <label class="field-label">Reason</label>
+                          <input
+                            type="text"
+                            id="attendanceEventReason"
+                            placeholder="Brief reason"
+                            class="field-input"
+                          />
+                        </div>
+                      </div>
+                      <button type="button" onclick="addAttendanceEvent()" class="btn-add">
+                        <svg
+                          class="w-3.5 h-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                        Add Entry
+                      </button>
+                      <div id="attendanceEventList" class="space-y-2"></div>
+                      <input type="hidden" name="attendanceEvents" id="attendanceEventsHidden" />
+                    </div>
+                  </section>
+
+                  <div class="flex justify-end pt-4 border-t border-slate-100">
+                    <button type="submit" class="btn-primary">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      Submit Report
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <%- include('includes/show-report-list') %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Desktop sidebar collapse ─────────────────────
+      function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const mainArea = document.getElementById('mainArea');
+        sidebar.classList.toggle('collapsed');
+        const isCollapsed = sidebar.classList.contains('collapsed');
+        mainArea.style.marginLeft = isCollapsed
+          ? 'var(--sidebar-collapsed-width)'
+          : 'var(--sidebar-width)';
+        localStorage.setItem('sidebarCollapsed', isCollapsed);
+      }
+
+      // ── Mobile sidebar ───────────────────────────────
+      function openMobileSidebar() {
+        document.getElementById('sidebar').classList.add('mobile-open');
+        document.getElementById('sidebarBackdrop').classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeMobileSidebar() {
+        document.getElementById('sidebar').classList.remove('mobile-open');
+        document.getElementById('sidebarBackdrop').classList.remove('active');
+        document.body.style.overflow = '';
+      }
+
+      // Restore collapsed state on load
+      (function () {
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+          const sidebar = document.getElementById('sidebar');
+          const mainArea = document.getElementById('mainArea');
+          sidebar.classList.add('collapsed');
+          mainArea.style.marginLeft = 'var(--sidebar-collapsed-width)';
+        }
+      })();
+
+      // Close mobile sidebar on nav tap
+      document.querySelectorAll('.nav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          if (window.innerWidth < 1024) closeMobileSidebar();
+        });
+      });
+    </script>
+
+    <script src="/employee-task-page.js"></script>
+    <script>
+      const VAPID_PUBLIC_KEY = '<%= process.env.VAPID_PUBLIC_KEY %>';
+
+      async function registerPushNotifications() {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+          console.warn('Push not supported in this browser');
+          return;
+        }
+        try {
+          const registration = await navigator.serviceWorker.register('/sw.js');
+          console.log('[SW] Service worker registered');
+          const permission = await Notification.requestPermission();
+          if (permission !== 'granted') {
+            console.warn('[SW] Notification permission denied');
+            return;
+          }
+          const existingSub = await registration.pushManager.getSubscription();
+          if (existingSub) {
+            console.log('[SW] Already subscribed, syncing...');
+            await syncSubscription(existingSub);
+            return;
+          }
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+          });
+          await syncSubscription(subscription);
+          console.log('[SW] Subscribed and saved successfully');
+        } catch (err) {
+          console.error('[SW] Push registration error:', err);
+        }
+      }
+
+      async function syncSubscription(subscription) {
+        const res = await fetch('/employee/save-subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(subscription),
+        });
+        const data = await res.json();
+        console.log('[SW] Subscription saved:', data);
+      }
+
+      function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+        const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+        const rawData = atob(base64);
+        return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)));
+      }
+
+      registerPushNotifications();
+    </script>
+  </body>
+</html>

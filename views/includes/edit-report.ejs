@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Report - Week <%= report.duration %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Sora', sans-serif !important;
+      background: #f0f0f7 !important;
+      background-image:
+        radial-gradient(ellipse at 15% 0%, rgba(79,70,229,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 100%, rgba(124,58,237,0.05) 0%, transparent 55%) !important;
+    }
+
+    /* ── Sticky Nav ── */
+    .styled-nav {
+      background: rgba(255,255,255,0.92) !important;
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(79,70,229,0.1) !important;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05) !important;
+    }
+    .nav-back {
+      display: inline-flex; align-items: center;
+      font-size: 0.82rem; font-weight: 600; color: #64748b;
+      text-decoration: none; padding: 6px 10px; border-radius: 8px; transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .nav-back:hover { color: #4f46e5; background: rgba(79,70,229,0.05); }
+    .nav-divider { color: #e2e8f0; font-size: 1.3rem; font-weight: 300; flex-shrink: 0; }
+    .nav-title { font-size: 1rem; font-weight: 800; color: #0f172a; line-height: 1.2; }
+    .nav-sub   { font-size: 0.68rem; color: #94a3b8; margin-top: 2px; }
+
+    .btn-nav-cancel {
+      display: inline-flex; align-items: center;
+      padding: 8px 18px; background: #f1f5f9;
+      border: 1.5px solid #e2e8f0; border-radius: 9px;
+      font-size: 0.8rem; font-weight: 600; font-family: 'Sora', sans-serif;
+      color: #475569; text-decoration: none; transition: all 0.15s; cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-nav-cancel:hover { background: #e2e8f0; border-color: #cbd5e1; }
+
+    .btn-save {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 18px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff; border: none; border-radius: 9px;
+      font-size: 0.8rem; font-weight: 600; font-family: 'Sora', sans-serif;
+      cursor: pointer; box-shadow: 0 2px 8px rgba(79,70,229,0.3); transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+    .btn-save:hover   { opacity: 0.9; }
+    .btn-save:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    /* Mobile nav save button — icon only */
+    .btn-save-icon-only {
+      display: none;
+      align-items: center; justify-content: center;
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: #fff; border: none; border-radius: 9px;
+      cursor: pointer; box-shadow: 0 2px 8px rgba(79,70,229,0.3);
+      flex-shrink: 0;
+    }
+
+    /* ── Left sidebar card ── */
+    .sidebar-card {
+      background: #fff !important;
+      border-radius: 14px !important;
+      border: 1px solid rgba(0,0,0,0.06) !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+      overflow: hidden;
+    }
+    .sidebar-card-head {
+      padding: 14px 22px !important;
+      background: linear-gradient(135deg, #0f0e17, #1a1840) !important;
+    }
+    .sidebar-card-head h2 {
+      color: #fff !important; font-weight: 600 !important;
+      font-size: 0.88rem !important; margin: 0;
+    }
+    .sidebar-card-head p { color: rgba(255,255,255,0.4); font-size: 0.63rem; margin-top: 2px; }
+
+    /* ── Section label ── */
+    .sec-label {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.09em;
+      text-transform: uppercase; color: #4f46e5;
+      display: flex; align-items: center; gap: 7px; margin-bottom: 10px;
+    }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: rgba(79,70,229,0.1); }
+
+    /* ── Form fields ── */
+    .f-label {
+      display: block; font-size: 0.62rem !important; font-weight: 700 !important;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: #64748b !important; margin-bottom: 6px !important;
+    }
+    .f-input, .f-select, .f-textarea {
+      width: 100%; padding: 9px 12px !important;
+      border: 1.5px solid #e2e8f0 !important; border-radius: 9px !important;
+      font-size: 0.82rem !important; font-family: 'Sora', sans-serif !important;
+      outline: none; color: #0f172a; background: #f8fafc;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .f-input:focus, .f-select:focus, .f-textarea:focus {
+      border-color: #4f46e5 !important;
+      box-shadow: 0 0 0 3px rgba(79,70,229,0.1) !important;
+      background: #fff !important;
+    }
+    .f-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 9px center; background-size: 14px;
+      padding-right: 28px !important;
+    }
+    .f-textarea { resize: none; }
+
+    /* ── Sub-block ── */
+    .sub-block {
+      border: 1px solid rgba(79,70,229,0.08) !important;
+      border-radius: 10px !important;
+      padding: 14px !important;
+      background: #fafbff !important;
+    }
+
+    /* ── Half-day radio cards ── */
+    .half-card {
+      padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 9px;
+      text-align: center; cursor: pointer; transition: all 0.15s; display: block;
+    }
+    .half-card:has(input:checked) { border-color: #4f46e5; background: rgba(79,70,229,0.04); }
+
+    /* ── Days chip ── */
+    .days-chip {
+      padding: 6px 11px; background: rgba(79,70,229,0.06);
+      border: 1px solid rgba(79,70,229,0.12); border-radius: 7px;
+      font-size: 0.72rem; color: #4f46e5; margin-top: 10px;
+    }
+
+    /* ── Entry list items ── */
+    .entry-item {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+      background: #fff; border: 1px solid #eaebf0; border-radius: 8px;
+      padding: 8px 10px; margin-bottom: 5px;
+    }
+    .entry-item:last-child { margin-bottom: 0; }
+    .entry-text { font-size: 0.74rem; color: #475569; flex: 1; line-height: 1.45; }
+    .entry-remove {
+      background: none; border: none; cursor: pointer; color: #f43f5e;
+      padding: 2px; border-radius: 4px; flex-shrink: 0;
+      display: flex; align-items: center; transition: background 0.12s;
+    }
+    .entry-remove:hover { background: rgba(244,63,94,0.09); }
+
+    /* ── Add buttons ── */
+    .btn-add-indigo {
+      width: 100%; padding: 8px 12px !important;
+      background: rgba(79,70,229,0.07) !important; color: #4f46e5 !important;
+      border: 1px solid rgba(79,70,229,0.2) !important; border-radius: 8px !important;
+      font-size: 0.75rem !important; font-weight: 600 !important; font-family: 'Sora', sans-serif;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+      transition: all 0.15s;
+    }
+    .btn-add-indigo:hover { background: rgba(79,70,229,0.13) !important; }
+
+    .btn-add-green {
+      width: 100%; padding: 8px 12px !important;
+      background: rgba(16,185,129,0.07) !important; color: #059669 !important;
+      border: 1px solid rgba(16,185,129,0.2) !important; border-radius: 8px !important;
+      font-size: 0.75rem !important; font-weight: 600 !important; font-family: 'Sora', sans-serif;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;
+      transition: all 0.15s;
+    }
+    .btn-add-green:hover { background: rgba(16,185,129,0.13) !important; }
+
+    /* ── Employee chip ── */
+    .emp-chip {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 11px; border-radius: 10px;
+      background: rgba(79,70,229,0.04); border: 1px solid rgba(79,70,229,0.1);
+    }
+    .emp-avatar {
+      width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.85rem; color: #fff;
+    }
+
+    /* ── Tasks card ── */
+    .tasks-card {
+      background: #fff !important;
+      border-radius: 14px !important;
+      border: 1px solid rgba(0,0,0,0.06) !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+      overflow: hidden;
+    }
+    .tasks-card-head {
+      padding: 16px 22px !important;
+      background: linear-gradient(135deg, #0f0e17, #1a1840) !important;
+      border-bottom: none !important;
+    }
+    .tasks-card-head h2 {
+      color: #fff !important; font-size: 0.95rem !important;
+      font-weight: 700 !important; margin: 0;
+    }
+    .tasks-card-head p { color: rgba(255,255,255,0.4); font-size: 0.65rem; margin-top: 2px; }
+
+    .btn-add-task {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 15px !important;
+      background: rgba(79,70,229,0.1) !important; color: #4f46e5 !important;
+      border: 1px solid rgba(79,70,229,0.22) !important; border-radius: 8px !important;
+      font-size: 0.76rem !important; font-weight: 600 !important; font-family: 'Sora', sans-serif;
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .btn-add-task:hover { background: rgba(79,70,229,0.16) !important; }
+
+    .tasks-count-badge {
+      padding: 5px 13px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 7px; font-size: 0.7rem; font-weight: 700;
+      color: rgba(255,255,255,0.65); font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+    }
+
+    /* ── Task cards ── */
+    .task-item {
+      border: 1.5px solid #eaebf0 !important;
+      border-radius: 13px !important;
+      padding: 22px 24px !important;
+      background: #fff !important;
+      position: relative;
+      transition: border-color 0.18s, box-shadow 0.18s !important;
+    }
+    .task-item:hover {
+      border-color: rgba(79,70,229,0.22) !important;
+      box-shadow: 0 3px 16px rgba(79,70,229,0.08) !important;
+    }
+    .task-num-badge {
+      width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+      background: linear-gradient(135deg, rgba(79,70,229,0.1), rgba(124,58,237,0.07));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 800; color: #4f46e5;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .task-title { font-size: 1rem !important; font-weight: 700 !important; color: #0f172a !important; }
+
+    .task-del-btn {
+      position: absolute; top: 16px; right: 16px;
+      background: rgba(244,63,94,0.06); border: 1px solid rgba(244,63,94,0.15);
+      border-radius: 9px; padding: 8px; color: #f43f5e;
+      cursor: pointer; display: flex; align-items: center; transition: background 0.15s;
+    }
+    .task-del-btn:hover { background: rgba(244,63,94,0.13); }
+
+    /* ── Task form fields ── */
+    .task-field-label {
+      display: block; font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: #64748b; margin-bottom: 7px;
+    }
+    .task-input, .task-textarea {
+      width: 100%; padding: 10px 14px !important;
+      border: 1.5px solid #e2e8f0 !important; border-radius: 9px !important;
+      font-size: 0.84rem !important; font-family: 'Sora', sans-serif !important;
+      outline: none; color: #0f172a; background: #f8fafc;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .task-input:focus, .task-textarea:focus {
+      border-color: #4f46e5 !important;
+      box-shadow: 0 0 0 3px rgba(79,70,229,0.1) !important;
+      background: #fff !important;
+    }
+    .task-textarea { resize: none; }
+
+    /* ── Status radio cards ── */
+    .status-card {
+      padding: 10px 8px; border: 2px solid #e2e8f0; border-radius: 10px;
+      text-align: center; cursor: pointer; transition: all 0.15s; display: block;
+    }
+    .status-card.s-pending:has(input:checked)   { border-color: #f59e0b; background: rgba(245,158,11,0.05); }
+    .status-card.s-progress:has(input:checked)  { border-color: #4f46e5; background: rgba(79,70,229,0.05); }
+    .status-card.s-done:has(input:checked)      { border-color: #10b981; background: rgba(16,185,129,0.05); }
+
+    /* ── Task meta ── */
+    .task-meta { font-size: 0.63rem; color: #94a3b8; display: inline-flex; align-items: center; gap: 4px; }
+
+    /* ── Empty state ── */
+    .empty-wrap {
+      width: 72px; height: 72px; background: rgba(79,70,229,0.07); border-radius: 50%;
+      display: flex; align-items: center; justify-content: margin: 0 auto 16px; margin: 0 auto 16px;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+    /* ── Spin ── */
+    @keyframes _spin { to { transform: rotate(360deg); } }
+    .animate-spin { animation: _spin 1s linear infinite !important; }
+
+    /* ══ RESPONSIVE ══════════════════════════════════════════ */
+
+    /* Tablet: stack sidebar on top, full width */
+    @media (max-width: 1023px) {
+      .sidebar-sticky-wrap {
+        position: static !important;
+      }
+    }
+
+    /* Mobile nav: compress */
+    @media (max-width: 640px) {
+      .nav-divider { display: none; }
+      .nav-title-group { display: none; }
+      .btn-nav-cancel { display: none; }
+      .btn-save { display: none; }
+      .btn-save-icon-only { display: inline-flex; }
+      .nav-back span { display: none; }
+      .nav-back svg { margin-right: 0; }
+      .nav-back {
+        width: 36px; height: 36px;
+        padding: 0;
+        justify-content: center;
+        border: 1.5px solid #e2e8f0;
+      }
+    }
+
+    /* Mobile content padding */
+    @media (max-width: 640px) {
+      .page-content { padding: 16px !important; }
+      .task-item { padding: 16px !important; }
+      .tasks-card-head { padding: 14px 16px !important; }
+      .tasks-card > .p-6 { padding: 16px !important; }
+      .sidebar-card .p-6 { padding: 16px !important; }
+    }
+
+    /* Tablet adjustments */
+    @media (min-width: 641px) and (max-width: 1023px) {
+      /* Side-by-side leave + attendance on tablet */
+      .sidebar-two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .sidebar-two-col > .pt-5 {
+        padding-top: 0 !important;
+        border-top: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAV ══ -->
+  <nav class="styled-nav border-b sticky top-0 z-50 shadow-sm">
+    <div class="px-4 sm:px-6 py-3 sm:py-4">
+      <div class="flex items-center justify-between gap-3">
+
+        <!-- Left: back + title -->
+        <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+          <a href="/employee/dashboard/<%= userId %>/show-report/<%= report._id %>" class="nav-back flex-shrink-0">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            <span>Cancel &amp; Go Back</span>
+          </a>
+          <span class="nav-divider">|</span>
+          <div class="nav-title-group min-w-0">
+            <h1 class="nav-title truncate">Edit Weekly Report</h1>
+            <p class="nav-sub hidden sm:block">Make changes to your report and tasks</p>
+          </div>
+        </div>
+
+        <!-- Right: actions -->
+        <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <a href="/employee/dashboard/<%= userId %>/show-report/<%= report._id %>" class="btn-nav-cancel">
+            Cancel
+          </a>
+          <button type="button" id="saveButton" onclick="handleSave()" class="btn-save">
+            <svg class="w-4 h-4" id="saveIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span id="saveText">Save Changes</span>
+          </button>
+          <!-- Mobile icon-only save -->
+          <button type="button" onclick="handleSave()" class="btn-save-icon-only">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <div class="page-content px-4 sm:px-6 py-4 sm:py-6">
+    <form id="editReportForm" action="/employee/dashboard/<%= userId %>/update-report/<%= report._id %>" method="POST">
+
+      <input type="hidden" name="attendanceEvents" id="attendanceEventsHidden">
+
+      <div class="grid grid-cols-12 gap-4 sm:gap-6">
+
+        <!-- ── LEFT SIDEBAR ── -->
+        <div class="col-span-12 lg:col-span-3">
+          <div class="sidebar-card sidebar-sticky-wrap lg:sticky lg:top-24">
+
+            <div class="sidebar-card-head">
+              <div style="display:flex;align-items:center;gap:9px;">
+                <div style="width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </div>
+                <div>
+                  <h2>Report Settings</h2>
+                  <p>Configure report details</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-6 space-y-5">
+
+              <!-- Week Duration -->
+              <div>
+                <label class="f-label">Week Duration *</label>
+                <input type="text" name="duration" value="<%= report.duration %>" required
+                       class="f-input" style="font-family:'JetBrains Mono',monospace;font-weight:600;"
+                       placeholder="e.g., W20">
+              </div>
+
+              <!-- On tablet, leave + attendance side by side -->
+              <div class="sidebar-two-col">
+
+                <!-- ── LEAVE INFORMATION ── -->
+                <div>
+                  <p class="sec-label">Leave Information</p>
+
+                  <div id="existingLeavesContainer" class="mb-4 space-y-2">
+                    <p style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;margin-bottom:6px;">Existing Leave Records</p>
+                    <div id="existingLeavesList"></div>
+                  </div>
+
+                  <div class="sub-block space-y-4">
+                    <div>
+                      <label class="f-label">Add New Leave Entry</label>
+                      <select id="leaveType" class="f-select" onchange="handleLeaveTypeChange()">
+                        <option value="">Select Leave Type</option>
+                        <option value="single-full">Single Day - Full Day</option>
+                        <option value="single-half">Single Day - Half Day</option>
+                        <option value="multiple">Multiple Days</option>
+                        <option value="office-holiday">Office Holiday</option>
+                      </select>
+                    </div>
+
+                    <div id="singleDaySection" class="hidden">
+                      <label class="f-label">Leave Date</label>
+                      <input type="date" id="singleDate" class="f-input">
+                    </div>
+
+                    <div id="halfDaySection" class="hidden">
+                      <label class="f-label">Half Day Period</label>
+                      <div class="grid grid-cols-2 gap-2" style="margin-top:4px;">
+                        <label class="half-card">
+                          <input type="radio" name="halfDayPeriod" value="first-half" class="sr-only">
+                          <span style="font-size:0.72rem;font-weight:600;color:#475569;">First Half</span>
+                          <p style="font-size:0.62rem;color:#94a3b8;margin-top:2px;">Morning</p>
+                        </label>
+                        <label class="half-card">
+                          <input type="radio" name="halfDayPeriod" value="second-half" class="sr-only">
+                          <span style="font-size:0.72rem;font-weight:600;color:#475569;">Second Half</span>
+                          <p style="font-size:0.62rem;color:#94a3b8;margin-top:2px;">Afternoon</p>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div id="multipleDaysSection" class="hidden">
+                      <div class="space-y-3">
+                        <div>
+                          <label class="f-label">From Date</label>
+                          <input type="date" id="fromDate" class="f-input" onchange="calculateLeaveDays()">
+                        </div>
+                        <div>
+                          <label class="f-label">To Date</label>
+                          <input type="date" id="toDate" class="f-input" onchange="calculateLeaveDays()">
+                        </div>
+                      </div>
+                      <div id="leaveDaysCount" class="hidden days-chip">
+                        <span style="font-weight:600;">Total Days:</span>
+                        <span id="totalDays" style="font-weight:800;">0</span>
+                      </div>
+                    </div>
+
+                    <div id="officeHolidaySection" class="hidden space-y-3">
+                      <div>
+                        <label class="f-label">Holiday Date</label>
+                        <input type="date" id="holidayDate" class="f-input">
+                      </div>
+                      <div>
+                        <label class="f-label">Holiday Name</label>
+                        <input type="text" id="holidayName" placeholder="e.g. Diwali, Christmas" class="f-input">
+                      </div>
+                    </div>
+
+                    <div id="leaveNotesSection" class="hidden">
+                      <label class="f-label">Reason / Notes</label>
+                      <textarea id="leaveNotes" rows="2" class="f-textarea" placeholder="Reason for leave..."></textarea>
+                    </div>
+
+                    <button type="button" id="addLeaveBtn" onclick="addLeaveEntry()" class="hidden btn-add-indigo">
+                      <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                      Add Leave Entry
+                    </button>
+                  </div>
+                </div>
+
+                <!-- ── ATTENDANCE EVENTS ── -->
+                <div class="pt-5 lg:pt-5 border-t lg:border-t border-gray-200">
+                  <p class="sec-label">Early Leave &amp; Late Arrival</p>
+
+                  <div class="mb-4 space-y-2">
+                    <p style="font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;margin-bottom:6px;">Existing Entries</p>
+                    <div id="attendanceEventList"></div>
+                  </div>
+
+                  <div class="sub-block space-y-3">
+                    <div>
+                      <label class="f-label">Type</label>
+                      <select id="attendanceEventType" class="f-select">
+                        <option value="">Select Type</option>
+                        <option value="early-leave">Early Leave</option>
+                        <option value="late-arrival">Late Arrival</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="f-label">Date</label>
+                      <input type="date" id="attendanceEventDate" class="f-input">
+                    </div>
+                    <div>
+                      <label class="f-label">Time</label>
+                      <input type="time" id="attendanceEventTime" class="f-input">
+                      <p style="font-size:0.6rem;color:#94a3b8;margin-top:3px;">Actual departure / arrival time</p>
+                    </div>
+                    <div>
+                      <label class="f-label">Reason</label>
+                      <input type="text" id="attendanceEventReason" placeholder="Brief reason" class="f-input">
+                    </div>
+                    <button type="button" onclick="addAttendanceEvent()" class="btn-add-green">
+                      <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                      Add Entry
+                    </button>
+                  </div>
+                </div>
+
+              </div><!-- /.sidebar-two-col -->
+
+              <!-- Employee Info -->
+              <div class="pt-5 border-t-2 border-gray-100">
+                <p class="sec-label">Employee Info</p>
+                <div class="emp-chip">
+                  <div class="emp-avatar"><%= report.user.name.charAt(0).toUpperCase() %></div>
+                  <div style="min-width:0;">
+                    <p style="font-size:0.83rem;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= report.user.name %></p>
+                    <p style="font-size:0.63rem;color:#94a3b8;font-family:'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= report.user.userId %></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Task Count -->
+              <div>
+                <p class="sec-label">Total Tasks</p>
+                <div style="display:flex;align-items:baseline;gap:5px;">
+                  <span style="font-size:1.9rem;font-weight:800;color:#0f172a;font-family:'JetBrains Mono',monospace;line-height:1;"><%= report.tasks.length %></span>
+                  <span style="font-size:0.72rem;color:#94a3b8;">task<%= report.tasks.length!==1?'s':'' %></span>
+                </div>
+              </div>
+
+              <!-- Mobile-only Save button inside sidebar -->
+              <div class="sm:hidden pt-2 border-t border-gray-100">
+                <button type="button" onclick="handleSave()" class="btn-save" style="width:100%;justify-content:center;">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  Save Changes
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TASKS ── -->
+        <div class="col-span-12 lg:col-span-9">
+          <div class="tasks-card">
+
+            <div class="tasks-card-head">
+              <div class="flex items-center justify-between gap-3">
+                <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                  <div style="width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                  </div>
+                  <div class="min-w-0">
+                    <h2>Edit Tasks</h2>
+                    <p class="hidden sm:block">Update task details and status</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                  <button type="button" onclick="addNewTask()" class="btn-add-task">
+                    <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    <span class="hidden sm:inline">Add Task</span>
+                    <span class="sm:hidden">Add</span>
+                  </button>
+                  <span class="tasks-count-badge hidden sm:inline"><%= report.tasks.length %> Task<%= report.tasks.length !== 1 ? 's' : '' %></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-6">
+              <div id="tasksList" class="space-y-4 sm:space-y-5" data-task-count="<%= report.tasks.length %>">
+
+                <% if (report.tasks.length === 0) { %>
+                <div id="emptyTaskMessage" class="text-center py-12 sm:py-16">
+                  <div class="empty-wrap">
+                    <svg style="width:30px;height:30px;color:#818cf8;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                  </div>
+                  <h3 style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:5px;">No Tasks</h3>
+                  <p style="font-size:0.8rem;color:#94a3b8;">Click "Add Task" to create your first task</p>
+                </div>
+                <% } %>
+
+                <% report.tasks.forEach((task, index) => { %>
+                <div class="task-item" data-task-id="<%= task._id %>">
+
+                  <button type="button" onclick="deleteTask('<%= report._id %>', '<%= task._id %>')" class="task-del-btn">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
+
+                  <div class="pr-12 sm:pr-14">
+                    <div class="flex items-center mb-4 sm:mb-5">
+                      <div class="task-num-badge mr-3">#<%= index + 1 %></div>
+                      <h3 class="task-title">Task <%= index + 1 %></h3>
+                    </div>
+
+                    <input type="hidden" name="tasks[<%= index %>][taskId]" value="<%= task._id %>">
+
+                    <div class="mb-4">
+                      <label class="task-field-label">Task Name *</label>
+                      <input type="text" name="tasks[<%= index %>][taskName]" value="<%= task.taskName %>" required class="task-input">
+                    </div>
+
+                    <div class="mb-4">
+                      <label class="task-field-label">Description</label>
+                      <textarea name="tasks[<%= index %>][description]" rows="3" class="task-textarea"><%= task.description || '' %></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                      <label class="task-field-label">Status *</label>
+                      <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                        <label class="status-card s-pending">
+                          <input type="radio" name="tasks[<%= index %>][status]" value="pending" <%= task.status === 'pending' ? 'checked' : '' %> class="sr-only">
+                          <span style="font-size:0.72rem;font-weight:700;color:<%= task.status==='pending'?'#b45309':'#94a3b8' %>;">Pending</span>
+                        </label>
+                        <label class="status-card s-progress">
+                          <input type="radio" name="tasks[<%= index %>][status]" value="in-progress" <%= task.status === 'in-progress' ? 'checked' : '' %> class="sr-only">
+                          <span style="font-size:0.72rem;font-weight:700;color:<%= task.status==='in-progress'?'#4f46e5':'#94a3b8' %>;">In Progress</span>
+                        </label>
+                        <label class="status-card s-done">
+                          <input type="radio" name="tasks[<%= index %>][status]" value="completed" <%= task.status === 'completed' ? 'checked' : '' %> class="sr-only">
+                          <span style="font-size:0.72rem;font-weight:700;color:<%= task.status==='completed'?'#047857':'#94a3b8' %>;">Completed</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4 pt-4 border-t border-gray-100">
+                      <span class="task-meta">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Created: <%= new Date(task.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <% }); %>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+  <div id="reportData"
+       data-leave-info='<%- JSON.stringify(report.leaveInfo || []) %>'
+       style="display:none;"></div>
+
+  <script>
+    // ─────────────────────────────────────────
+    // LEAVE
+    // ─────────────────────────────────────────
+    let leaveArray = [];
+
+    document.addEventListener('DOMContentLoaded', function () {
+      initializeExistingLeaves();
+      initializeExistingAttendanceEvents();
+    });
+
+    function initializeExistingLeaves() {
+      try {
+        const raw = document.getElementById('reportData').getAttribute('data-leave-info');
+        leaveArray = JSON.parse(raw).filter(Boolean);
+        renderExistingLeaves();
+      } catch (error) {
+        console.error('Error initializing leaves:', error);
+        leaveArray = [];
+        renderExistingLeaves();
+      }
+    }
+
+    function renderExistingLeaves() {
+      const container = document.getElementById('existingLeavesList');
+      if (!container) return;
+
+      if (leaveArray.length === 0) {
+        container.innerHTML = '<p style="font-size:0.68rem;color:#94a3b8;font-style:italic;">No leave entries yet</p>';
+        return;
+      }
+
+      container.innerHTML = leaveArray.map((leave, index) => `
+        <div class="entry-item">
+          <span class="entry-text">${escapeHtml(leave)}</span>
+          <button type="button" onclick="removeLeave(${index})" class="entry-remove">
+            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+          <input type="hidden" name="leaveInfo[]" value="${escapeHtml(leave)}">
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function handleLeaveTypeChange() {
+      const leaveType = document.getElementById('leaveType').value;
+      const sections = ['singleDaySection', 'halfDaySection', 'multipleDaysSection', 'officeHolidaySection', 'leaveNotesSection'];
+      sections.forEach(id => document.getElementById(id)?.classList.add('hidden'));
+      document.getElementById('addLeaveBtn').classList.add('hidden');
+
+      document.getElementById('singleDate').value = '';
+      document.getElementById('leaveNotes').value = '';
+      document.getElementById('fromDate').value = '';
+      document.getElementById('toDate').value = '';
+      document.getElementById('holidayDate').value = '';
+      document.getElementById('holidayName').value = '';
+      document.querySelectorAll('input[name="halfDayPeriod"]').forEach(r => r.checked = false);
+
+      if (leaveType === 'single-full') {
+        document.getElementById('singleDaySection').classList.remove('hidden');
+        document.getElementById('leaveNotesSection').classList.remove('hidden');
+        document.getElementById('addLeaveBtn').classList.remove('hidden');
+      } else if (leaveType === 'single-half') {
+        document.getElementById('singleDaySection').classList.remove('hidden');
+        document.getElementById('halfDaySection').classList.remove('hidden');
+        document.getElementById('leaveNotesSection').classList.remove('hidden');
+        document.getElementById('addLeaveBtn').classList.remove('hidden');
+      } else if (leaveType === 'multiple') {
+        document.getElementById('multipleDaysSection').classList.remove('hidden');
+        document.getElementById('leaveNotesSection').classList.remove('hidden');
+        document.getElementById('addLeaveBtn').classList.remove('hidden');
+      } else if (leaveType === 'office-holiday') {
+        document.getElementById('officeHolidaySection').classList.remove('hidden');
+        document.getElementById('addLeaveBtn').classList.remove('hidden');
+      }
+    }
+
+    function calculateLeaveDays() {
+      const fromDate = document.getElementById('fromDate').value;
+      const toDate = document.getElementById('toDate').value;
+      const leaveDaysCount = document.getElementById('leaveDaysCount');
+      const totalDaysSpan = document.getElementById('totalDays');
+
+      if (fromDate && toDate) {
+        const from = new Date(fromDate);
+        const to = new Date(toDate);
+        if (to >= from) {
+          const diffDays = Math.ceil(Math.abs(to - from) / (1000 * 60 * 60 * 24)) + 1;
+          totalDaysSpan.textContent = diffDays;
+          leaveDaysCount.classList.remove('hidden');
+        } else {
+          leaveDaysCount.classList.add('hidden');
+        }
+      } else {
+        leaveDaysCount.classList.add('hidden');
+      }
+    }
+
+    function addLeaveEntry() {
+      const leaveType = document.getElementById('leaveType').value;
+      let leaveInfoText = '';
+
+      if (leaveType === 'single-full') {
+        const date = document.getElementById('singleDate').value;
+        const notes = document.getElementById('leaveNotes').value.trim();
+        if (!date) return alert('Please select a leave date');
+        const formattedDate = new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        leaveInfoText = `Full Day Leave on ${formattedDate}`;
+        if (notes) leaveInfoText += ` - ${notes}`;
+      } else if (leaveType === 'single-half') {
+        const date = document.getElementById('singleDate').value;
+        const period = document.querySelector('input[name="halfDayPeriod"]:checked')?.value;
+        const notes = document.getElementById('leaveNotes').value.trim();
+        if (!date) return alert('Please select a leave date');
+        if (!period) return alert('Please select half day period');
+        const formattedDate = new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const periodText = period === 'first-half' ? 'First Half (Morning)' : 'Second Half (Afternoon)';
+        leaveInfoText = `Half Day Leave (${periodText}) on ${formattedDate}`;
+        if (notes) leaveInfoText += ` - ${notes}`;
+      } else if (leaveType === 'multiple') {
+        const fromDate = document.getElementById('fromDate').value;
+        const toDate = document.getElementById('toDate').value;
+        const notes = document.getElementById('leaveNotes').value.trim();
+        if (!fromDate || !toDate) return alert('Please select both from and to dates');
+        const fmtFrom = new Date(fromDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const fmtTo = new Date(toDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const totalDays = document.getElementById('totalDays').textContent;
+        leaveInfoText = `Leave from ${fmtFrom} to ${fmtTo} (${totalDays} days)`;
+        if (notes) leaveInfoText += ` - ${notes}`;
+      } else if (leaveType === 'office-holiday') {
+        const date = document.getElementById('holidayDate').value;
+        const name = document.getElementById('holidayName').value.trim();
+        if (!date) return alert('Please select holiday date');
+        if (!name) return alert('Please enter holiday name');
+        const formattedDate = new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        leaveInfoText = `Office Holiday: ${name} on ${formattedDate}`;
+      }
+
+      if (leaveInfoText) {
+        leaveArray.push(leaveInfoText);
+        renderExistingLeaves();
+        document.getElementById('leaveType').value = '';
+        handleLeaveTypeChange();
+      }
+    }
+
+    function removeLeave(index) {
+      if (confirm('Remove this leave entry?')) {
+        leaveArray.splice(index, 1);
+        renderExistingLeaves();
+      }
+    }
+
+    // ─────────────────────────────────────────
+    // ATTENDANCE EVENTS
+    // ─────────────────────────────────────────
+    let attendanceEvents = [];
+
+    function initializeExistingAttendanceEvents() {
+      try {
+        const raw = JSON.parse('<%- JSON.stringify(report.attendanceEvents || []) %>');
+        attendanceEvents = Array.isArray(raw) ? raw : [];
+        renderAttendanceEvents();
+      } catch (err) {
+        console.error('Error initializing attendance events:', err);
+        attendanceEvents = [];
+        renderAttendanceEvents();
+      }
+    }
+
+    function formatTimeTo12hr(time24) {
+      const [hrs, mins] = time24.split(':');
+      const h = parseInt(hrs);
+      const suffix = h >= 12 ? 'PM' : 'AM';
+      return `${h % 12 || 12}:${mins} ${suffix}`;
+    }
+
+    function addAttendanceEvent() {
+      const type = document.getElementById('attendanceEventType').value;
+      const date = document.getElementById('attendanceEventDate').value;
+      const time = document.getElementById('attendanceEventTime').value;
+      const reason = document.getElementById('attendanceEventReason').value.trim();
+
+      if (!type) return alert('Select type (Early Leave or Late Arrival)');
+      if (!date) return alert('Select a date');
+      if (!time) return alert('Enter a time');
+
+      const formattedDate = new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+      const formattedTime = formatTimeTo12hr(time);
+      const typeLabel = type === 'early-leave' ? 'Early Leave' : 'Late Arrival';
+      let label = `${typeLabel} on ${formattedDate} at ${formattedTime}`;
+      if (reason) label += ` — ${reason}`;
+
+      attendanceEvents.push({ type, date, time, reason, label });
+      renderAttendanceEvents();
+
+      document.getElementById('attendanceEventType').value = '';
+      document.getElementById('attendanceEventDate').value = '';
+      document.getElementById('attendanceEventTime').value = '';
+      document.getElementById('attendanceEventReason').value = '';
+    }
+
+    function renderAttendanceEvents() {
+      const list = document.getElementById('attendanceEventList');
+      const hidden = document.getElementById('attendanceEventsHidden');
+      if (!list || !hidden) return;
+
+      hidden.value = JSON.stringify(attendanceEvents);
+
+      if (attendanceEvents.length === 0) {
+        list.innerHTML = '<p style="font-size:0.68rem;color:#94a3b8;font-style:italic;">No entries</p>';
+        return;
+      }
+
+      list.innerHTML = attendanceEvents.map((event, index) => {
+        const displayType = (event.type || '').replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+        const dateVal = event.date ? new Date(event.date) : new Date();
+        const formattedDate = dateVal.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        const displayTime = event.time ? formatTimeTo12hr(event.time) : 'N/A';
+        return `
+          <div class="entry-item">
+            <div style="flex:1;min-width:0;">
+              <p style="font-size:0.72rem;font-weight:700;color:#0f172a;">${displayType}</p>
+              <p style="font-size:0.67rem;color:#64748b;margin-top:1px;">${formattedDate} at ${displayTime}</p>
+              ${event.reason ? `<p style="font-size:0.63rem;color:#94a3b8;font-style:italic;margin-top:2px;">"${event.reason}"</p>` : ''}
+            </div>
+            <button type="button" onclick="removeAttendanceEvent(${index})" class="entry-remove">
+              <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>`;
+      }).join('');
+    }
+
+    function removeAttendanceEvent(index) {
+      if (confirm('Remove this attendance entry?')) {
+        attendanceEvents.splice(index, 1);
+        renderAttendanceEvents();
+      }
+    }
+
+    // ─────────────────────────────────────────
+    // FORM SAVE
+    // ─────────────────────────────────────────
+    function handleSave() {
+      document.getElementById('attendanceEventsHidden').value = JSON.stringify(attendanceEvents);
+
+      const saveButton = document.getElementById('saveButton');
+      const saveText = document.getElementById('saveText');
+      const saveIcon = document.getElementById('saveIcon');
+
+      if (saveButton) {
+        saveButton.disabled = true;
+        saveButton.classList.add('opacity-75', 'cursor-not-allowed');
+        saveText.textContent = 'Saving...';
+        saveIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>';
+        saveIcon.classList.add('animate-spin');
+      }
+
+      setTimeout(() => {
+        document.getElementById('editReportForm').submit();
+      }, 500);
+    }
+
+    // ─────────────────────────────────────────
+    // TASKS
+    // ─────────────────────────────────────────
+    function deleteTask(reportId, taskId) {
+      if (!confirm('Are you sure you want to delete this task? This action cannot be undone.')) return;
+
+      const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+      if (taskElement) {
+        taskElement.style.opacity = '0.5';
+        taskElement.style.pointerEvents = 'none';
+      }
+
+      fetch(`/employee/dashboard/<%= userId %>/report/${reportId}/task/${taskId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            if (taskElement) {
+              taskElement.style.transition = 'all 0.3s ease';
+              taskElement.style.transform = 'translateX(100%)';
+              taskElement.style.opacity = '0';
+              setTimeout(() => window.location.reload(), 300);
+            }
+          } else {
+            alert('Error deleting task: ' + data.message);
+            if (taskElement) { taskElement.style.opacity = '1'; taskElement.style.pointerEvents = 'auto'; }
+          }
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Error deleting task. Please try again.');
+          if (taskElement) { taskElement.style.opacity = '1'; taskElement.style.pointerEvents = 'auto'; }
+        });
+    }
+
+    let newTaskIndex = parseInt(document.getElementById('tasksList').dataset.taskCount, 10) || 0;
+
+    function addNewTask() {
+      const list = document.getElementById('tasksList');
+      const emptyMsg = document.getElementById('emptyTaskMessage');
+      if (emptyMsg) emptyMsg.remove();
+
+      list.insertAdjacentHTML('beforeend', `
+        <div class="task-item">
+          <button type="button" onclick="removeLocalTask(this)" class="task-del-btn">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+          <div class="pr-12 sm:pr-14">
+            <div class="flex items-center mb-4 sm:mb-5">
+              <div class="task-num-badge mr-3">#${newTaskIndex + 1}</div>
+              <h3 class="task-title">Task ${newTaskIndex + 1}</h3>
+            </div>
+            <div class="mb-4">
+              <label class="task-field-label">Task Name *</label>
+              <input type="text" name="tasks[${newTaskIndex}][taskName]" required
+                class="task-input" placeholder="Enter task name">
+            </div>
+            <div class="mb-4">
+              <label class="task-field-label">Description</label>
+              <textarea name="tasks[${newTaskIndex}][description]" rows="3"
+                class="task-textarea" placeholder="Task description..."></textarea>
+            </div>
+            <div class="mb-4">
+              <label class="task-field-label">Status *</label>
+              <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                <label class="status-card s-pending">
+                  <input type="radio" name="tasks[${newTaskIndex}][status]" value="pending" checked class="sr-only">
+                  <span style="font-size:0.72rem;font-weight:700;color:#b45309;">Pending</span>
+                </label>
+                <label class="status-card s-progress">
+                  <input type="radio" name="tasks[${newTaskIndex}][status]" value="in-progress" class="sr-only">
+                  <span style="font-size:0.72rem;font-weight:700;color:#94a3b8;">In Progress</span>
+                </label>
+                <label class="status-card s-done">
+                  <input type="radio" name="tasks[${newTaskIndex}][status]" value="completed" class="sr-only">
+                  <span style="font-size:0.72rem;font-weight:700;color:#94a3b8;">Done</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      `);
+
+      newTaskIndex++;
+    }
+
+    function removeLocalTask(btn) {
+      btn.closest('.task-item').remove();
+    }
+  </script>
+</body>
+</html>

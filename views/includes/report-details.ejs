@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report Details - Week <%= report.duration %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Sora', sans-serif !important;
+        background: #f0f0f7 !important;
+        background-image:
+          radial-gradient(ellipse at 15% 0%, rgba(79, 70, 229, 0.07) 0%, transparent 55%),
+          radial-gradient(ellipse at 85% 100%, rgba(124, 58, 237, 0.05) 0%, transparent 55%) !important;
+      }
+
+      /* ── Nav ── */
+      .styled-nav {
+        background: rgba(255, 255, 255, 0.92) !important;
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(79, 70, 229, 0.1) !important;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      /* ── Back link ── */
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.82rem !important;
+        font-weight: 600 !important;
+        color: #64748b !important;
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 8px;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .back-link:hover {
+        color: #4f46e5 !important;
+        background: rgba(79, 70, 229, 0.05);
+      }
+      /* Icon-only back on very small screens */
+      .back-link .back-label {
+        display: inline;
+      }
+      @media (max-width: 480px) {
+        .back-link .back-label {
+          display: none;
+        }
+        .back-link {
+          width: 34px;
+          height: 34px;
+          padding: 0;
+          justify-content: center;
+          border: 1.5px solid #e2e8f0;
+        }
+        .back-link svg {
+          margin-right: 0 !important;
+        }
+      }
+
+      /* ── Edit btn ── */
+      .btn-edit {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 16px !important;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+        color: #fff !important;
+        border: none !important;
+        border-radius: 9px !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        font-family: 'Sora', sans-serif;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+        transition: opacity 0.15s;
+        white-space: nowrap;
+      }
+      .btn-edit:hover {
+        opacity: 0.9;
+      }
+      .btn-edit .btn-label {
+        display: inline;
+      }
+
+      /* ── Delete btn ── */
+      .btn-del {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 16px !important;
+        background: rgba(244, 63, 94, 0.07) !important;
+        color: #f43f5e !important;
+        border: 1.5px solid rgba(244, 63, 94, 0.25) !important;
+        border-radius: 9px !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .btn-del:hover {
+        background: rgba(244, 63, 94, 0.13) !important;
+        border-color: rgba(244, 63, 94, 0.4) !important;
+      }
+      .btn-del .btn-label {
+        display: inline;
+      }
+
+      /* On mobile: icon-only for edit & delete */
+      @media (max-width: 480px) {
+        .btn-edit .btn-label,
+        .btn-del .btn-label {
+          display: none;
+        }
+        .btn-edit {
+          padding: 8px 10px !important;
+        }
+        .btn-del {
+          padding: 8px 10px !important;
+        }
+      }
+
+      /* ── Page title ── */
+      .page-title {
+        font-size: 1.5rem !important;
+        font-weight: 800 !important;
+        color: #0f172a !important;
+      }
+      @media (max-width: 480px) {
+        .page-title {
+          font-size: 1.15rem !important;
+        }
+      }
+      .page-sub {
+        font-size: 0.75rem !important;
+        color: #94a3b8 !important;
+        margin-top: 4px;
+      }
+
+      /* ── Left card ── */
+      .info-card {
+        background: #fff !important;
+        border-radius: 14px !important;
+        border: 1px solid rgba(0, 0, 0, 0.06) !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+      }
+      .info-card-head {
+        padding: 14px 20px !important;
+        background: linear-gradient(135deg, #0f0e17, #1a1840) !important;
+        border-bottom: none !important;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .info-card-head-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .info-card-head h2 {
+        color: #fff !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        margin: 0;
+      }
+      .info-card-head p {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.63rem;
+        margin-top: 1px;
+      }
+
+      /* ── Info labels ── */
+      .info-key {
+        font-size: 0.6rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: #94a3b8 !important;
+        margin-bottom: 4px !important;
+      }
+      .info-val-name {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .info-val-mono {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+        color: #64748b;
+        word-break: break-all;
+      }
+      .info-val-big {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #0f172a;
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* ── Employee chip ── */
+      .emp-chip {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 11px;
+        border-radius: 10px;
+        background: rgba(79, 70, 229, 0.04);
+        border: 1px solid rgba(79, 70, 229, 0.1);
+      }
+      .emp-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.8rem;
+        color: #fff;
+      }
+
+      /* ── Tablet: info sidebar shows as 2-column grid inside ── */
+      @media (min-width: 641px) and (max-width: 1023px) {
+        .info-grid-2col {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+        .info-grid-2col > .info-full {
+          grid-column: 1 / -1;
+        }
+      }
+
+      /* ── Section divider label ── */
+      .sec-label {
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: #4f46e5;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 10px;
+        margin-top: 0;
+      }
+      .sec-label::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(79, 70, 229, 0.1);
+      }
+
+      /* ── Status breakdown ── */
+      .stat-block {
+        border: 1px solid #eaebf0;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .stat-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .stat-row:last-child {
+        border-bottom: none;
+      }
+      .stat-key {
+        font-size: 0.78rem;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .stat-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .stat-val {
+        font-size: 0.85rem;
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* ── Leave / attendance items ── */
+      .info-item {
+        border: 1px solid #eaebf0 !important;
+        border-radius: 9px !important;
+        padding: 9px 12px !important;
+        margin-bottom: 6px;
+        background: #fafbff !important;
+      }
+      .info-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .num-badge {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        background: rgba(79, 70, 229, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        font-weight: 800;
+        color: #4f46e5;
+        font-family: 'JetBrains Mono', monospace;
+        margin-top: 1px;
+      }
+
+      .att-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 9px;
+        border-radius: 99px;
+        font-size: 0.64rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+      .att-early {
+        background: rgba(245, 158, 11, 0.1);
+        color: #b45309;
+      }
+      .att-late {
+        background: rgba(79, 70, 229, 0.1);
+        color: #4f46e5;
+      }
+
+      /* ── Tasks card ── */
+      .tasks-card {
+        background: #fff !important;
+        border-radius: 14px !important;
+        border: 1px solid rgba(0, 0, 0, 0.06) !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+      }
+      .tasks-card-head {
+        padding: 14px 20px !important;
+        background: linear-gradient(135deg, #0f0e17, #1a1840) !important;
+        border-bottom: none !important;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .tasks-card-head-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+      .tasks-card-head-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .tasks-card-head h2 {
+        color: #fff !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+        margin: 0;
+      }
+      .tasks-card-head p {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.63rem;
+        margin-top: 1px;
+      }
+      .tasks-badge {
+        padding: 4px 11px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 7px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.65);
+        font-family: 'JetBrains Mono', monospace;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      /* ── Task item ── */
+      .task-item {
+        border: 1.5px solid #eaebf0 !important;
+        border-radius: 12px !important;
+        padding: 14px 16px !important;
+        background: #fff;
+        transition:
+          border-color 0.18s,
+          box-shadow 0.18s !important;
+      }
+      .task-item:hover {
+        border-color: rgba(79, 70, 229, 0.22) !important;
+        box-shadow: 0 2px 12px rgba(79, 70, 229, 0.07) !important;
+      }
+      .task-num {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.07));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        font-weight: 800;
+        color: #4f46e5;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .task-name {
+        font-size: 0.9rem !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+      }
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 11px;
+        border-radius: 99px;
+        font-size: 0.67rem !important;
+        font-weight: 700 !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .s-done {
+        background: rgba(16, 185, 129, 0.1) !important;
+        color: #047857 !important;
+      }
+      .s-progress {
+        background: rgba(79, 70, 229, 0.1) !important;
+        color: #4f46e5 !important;
+      }
+      .s-pending {
+        background: rgba(245, 158, 11, 0.1) !important;
+        color: #b45309 !important;
+      }
+
+      .task-desc-label {
+        font-size: 0.6rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: #94a3b8 !important;
+        margin-bottom: 3px;
+      }
+      .task-desc-text {
+        font-size: 0.78rem !important;
+        color: #475569 !important;
+        line-height: 1.55;
+      }
+      .task-meta {
+        font-size: 0.62rem !important;
+        color: #94a3b8 !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      /* On mobile: task meta wraps instead of overflowing */
+      .task-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+      }
+
+      /* On very small: status pill moves below title */
+      @media (max-width: 480px) {
+        .task-header-wrap {
+          flex-direction: column;
+          align-items: flex-start !important;
+          gap: 8px;
+        }
+        .task-header-wrap .status-pill {
+          margin-left: 0 !important;
+        }
+        .task-desc-indent,
+        .task-meta-indent {
+          margin-left: 0 !important;
+        }
+      }
+
+      /* ── Empty state ── */
+      .empty-icon-wrap {
+        width: 56px;
+        height: 56px;
+        background: rgba(79, 70, 229, 0.07);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+      }
+
+      /* ── Modal ── */
+      .modal-box {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+        padding: 24px;
+        width: 90%;
+        max-width: 420px;
+        margin: 16px;
+      }
+      .modal-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(244, 63, 94, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .btn-cancel {
+        padding: 8px 18px;
+        background: #f1f5f9;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 9px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        font-family: 'Sora', sans-serif;
+        color: #475569;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .btn-cancel:hover {
+        background: #e2e8f0;
+      }
+      .btn-confirm-del {
+        padding: 8px 18px;
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        border: none;
+        border-radius: 9px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        font-family: 'Sora', sans-serif;
+        color: #fff;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        transition: opacity 0.15s;
+      }
+      .btn-confirm-del:hover {
+        opacity: 0.92;
+      }
+      .btn-confirm-del:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+
+      /* ── Scrollbar ── */
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 99px;
+      }
+
+      /* ── Spin ── */
+      @keyframes _spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .do-spin {
+        animation: _spin 1s linear infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ══ TOP NAV ══ -->
+    <nav class="styled-nav border-b sticky top-0 z-50">
+      <div class="px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+        <div class="flex items-center justify-between gap-3">
+          <!-- Left: back -->
+          <a href="/employee/dashboard/<%= report.user._id %>" class="back-link flex-shrink-0">
+            <svg
+              class="w-4 h-4"
+              style="margin-right: 6px"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            <span class="back-label">Back to Dashboard</span>
+          </a>
+
+          <!-- Right: actions -->
+          <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <a
+              href="/employee/dashboard/<%= userId %>/edit-report/<%= report._id %>"
+              class="btn-edit"
+            >
+              <svg
+                class="w-4 h-4 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+              <span class="btn-label">Edit Report</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ══ MAIN ══ -->
+    <div class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+      <!-- Page Header -->
+      <div class="mb-4 sm:mb-6">
+        <h1 class="page-title">
+          Weekly Report —
+          <span style="font-family: 'JetBrains Mono', monospace"><%= report.duration %></span>
+        </h1>
+        <p class="page-sub">
+          Submitted on <%= new Date(report.createdAt).toLocaleDateString('en-US', { weekday: 'long',
+          year: 'numeric', month: 'long', day: 'numeric' }) %>
+        </p>
+      </div>
+
+      <!-- Grid -->
+      <div class="grid grid-cols-12 gap-4 sm:gap-6">
+        <!-- ── LEFT SIDEBAR ── -->
+        <div class="col-span-12 lg:col-span-4">
+          <div class="info-card">
+            <div class="info-card-head">
+              <div class="info-card-head-icon">
+                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h2>Report Information</h2>
+                <p>Summary &amp; details</p>
+              </div>
+            </div>
+
+            <div class="p-4 sm:p-6">
+              <!-- On tablet: 2-col inner grid -->
+              <div class="info-grid-2col space-y-5 lg:space-y-5" style="gap: inherit">
+                <!-- Employee -->
+                <div class="info-full">
+                  <p class="info-key">Employee</p>
+                  <div class="emp-chip">
+                    <div class="emp-avatar"><%= report.user.name.charAt(0).toUpperCase() %></div>
+                    <div style="min-width: 0">
+                      <p
+                        class="info-val-name"
+                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
+                      >
+                        <%= report.user.name %>
+                      </p>
+                      <p
+                        class="info-val-mono"
+                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis"
+                      >
+                        <%= report.user.userId %>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Week + Total Tasks side by side on tablet -->
+                <div>
+                  <p class="info-key">Week</p>
+                  <p class="info-val-big"><%= report.duration %></p>
+                </div>
+                <div>
+                  <p class="info-key">Total Tasks</p>
+                  <p class="info-val-big"><%= report.tasks.length %></p>
+                </div>
+
+                <!-- Status Breakdown -->
+                <div class="info-full pt-4 sm:pt-5 border-t border-gray-100">
+                  <p class="sec-label">Status Breakdown</p>
+                  <% const completed = report.tasks.filter(t => t.status === 'completed').length;
+                  const inProgress = report.tasks.filter(t => t.status === 'in-progress').length;
+                  const pending = report.tasks.filter(t => t.status === 'pending').length; %>
+                  <div class="stat-block">
+                    <div class="stat-row">
+                      <span class="stat-key"
+                        ><span class="stat-dot" style="background: #10b981"></span>Completed</span
+                      >
+                      <span class="stat-val" style="color: #047857"><%= completed %></span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="stat-key"
+                        ><span class="stat-dot" style="background: #4f46e5"></span>In Progress</span
+                      >
+                      <span class="stat-val" style="color: #4f46e5"><%= inProgress %></span>
+                    </div>
+                    <div class="stat-row">
+                      <span class="stat-key"
+                        ><span class="stat-dot" style="background: #f59e0b"></span>Pending</span
+                      >
+                      <span class="stat-val" style="color: #b45309"><%= pending %></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Leave Info -->
+                <% if (report.leaveInfo && Array.isArray(report.leaveInfo) &&
+                report.leaveInfo.length > 0) { %>
+                <div class="info-full pt-4 sm:pt-5 border-t border-gray-100">
+                  <p class="sec-label">Leave Information</p>
+                  <div class="space-y-2">
+                    <% report.leaveInfo.forEach((leave, index) => { %>
+                    <div class="info-item">
+                      <div class="flex items-start">
+                        <div class="num-badge mr-2 flex-shrink-0 mt-0.5"><%= index + 1 %></div>
+                        <p style="font-size: 0.76rem; color: #475569; line-height: 1.5; flex: 1">
+                          <%= leave %>
+                        </p>
+                      </div>
+                    </div>
+                    <% }); %>
+                  </div>
+                </div>
+                <% } %>
+
+                <!-- Attendance Events -->
+                <% if (report.attendanceEvents && report.attendanceEvents.length > 0) { %>
+                <div class="info-full pt-4 sm:pt-5 border-t border-gray-100">
+                  <p class="sec-label">Attendance</p>
+                  <div class="space-y-2">
+                    <% report.attendanceEvents.forEach((event) => { %> <% const isEarlyLeave =
+                    event.type === 'early-leave'; const badgeLabel = isEarlyLeave ? 'Early Leave' :
+                    'Late Arrival'; const eventDate = new
+                    Date(event.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short',
+                    day: 'numeric', year: 'numeric' }); const [hrs, mins] = event.time.split(':');
+                    const h = parseInt(hrs); const suffix = h >= 12 ? 'PM' : 'AM'; const
+                    formattedTime = `${h % 12 || 12}:${mins} ${suffix}`; %>
+                    <div class="info-item">
+                      <div class="flex items-center gap-2 mb-1.5">
+                        <span class="att-badge <%= isEarlyLeave ? 'att-early' : 'att-late' %>"
+                          ><%= badgeLabel %></span
+                        >
+                      </div>
+                      <p style="font-size: 0.76rem; color: #0f172a">
+                        <%= eventDate %> at <strong><%= formattedTime %></strong>
+                      </p>
+                      <% if (event.reason && event.reason.trim() !== '') { %>
+                      <p
+                        style="
+                          font-size: 0.67rem;
+                          color: #94a3b8;
+                          margin-top: 3px;
+                          font-style: italic;
+                        "
+                      >
+                        "<%= event.reason %>"
+                      </p>
+                      <% } %>
+                    </div>
+                    <% }); %>
+                  </div>
+                </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TASKS ── -->
+        <div class="col-span-12 lg:col-span-8">
+          <div class="tasks-card">
+            <div class="tasks-card-head">
+              <div class="tasks-card-head-left">
+                <div class="tasks-card-head-icon">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <h2 class="truncate">Tasks (<%= report.tasks.length %>)</h2>
+                  <p class="hidden sm:block">All tasks for this week</p>
+                </div>
+              </div>
+              <span class="tasks-badge"
+                ><%= report.tasks.length %> task<%= report.tasks.length !== 1 ? 's' : '' %></span
+              >
+            </div>
+
+            <div class="p-4 sm:p-6">
+              <% if (report.tasks.length === 0) { %>
+              <div class="text-center py-10 sm:py-12">
+                <div class="empty-icon-wrap">
+                  <svg
+                    style="width: 24px; height: 24px; color: #818cf8"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
+                  </svg>
+                </div>
+                <p style="font-size: 0.88rem; font-weight: 700; color: #1e293b; margin-bottom: 4px">
+                  No tasks in this report
+                </p>
+                <p style="font-size: 0.73rem; color: #94a3b8">Tasks will appear here once added</p>
+              </div>
+              <% } else { %>
+              <div class="space-y-3 sm:space-y-4">
+                <% report.tasks.forEach((task, index) => { %>
+                <div class="task-item">
+                  <!-- Task header -->
+                  <div class="flex items-start justify-between gap-2 mb-3 task-header-wrap">
+                    <div class="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                      <div class="task-num flex-shrink-0 mt-0.5">#<%= index + 1 %></div>
+                      <h3 class="task-name"><%= task.taskName %></h3>
+                    </div>
+                    <span
+                      class="status-pill <%= task.status === 'completed' ? 's-done' : task.status === 'in-progress' ? 's-progress' : 's-pending' %>"
+                    >
+                      <%= task.status === 'in-progress' ? 'In Progress' :
+                      task.status.charAt(0).toUpperCase() + task.status.slice(1) %>
+                    </span>
+                  </div>
+
+                  <!-- Description -->
+                  <% if (task.description) { %>
+                  <div class="mb-3 task-desc-indent" style="margin-left: 34px">
+                    <p class="task-desc-label">Description</p>
+                    <p class="task-desc-text"><%= task.description %></p>
+                  </div>
+                  <% } %>
+
+                  <!-- Meta -->
+                  <div
+                    class="task-meta-row task-meta-indent"
+                    style="margin-left: 34px; padding-top: 9px; border-top: 1px solid #f1f5f9"
+                  >
+                    <span class="task-meta">
+                      <svg
+                        style="width: 11px; height: 11px"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      Created: <%= new Date(task.createdAt).toLocaleDateString('en-US', { month:
+                      'short', day: 'numeric', year: 'numeric' }) %>
+                    </span>
+                    <% if (task.updatedAt && task.updatedAt.toString() !==
+                    task.createdAt.toString()) { %>
+                    <span class="task-meta">
+                      <svg
+                        style="width: 11px; height: 11px"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        />
+                      </svg>
+                      Updated: <%= new Date(task.updatedAt).toLocaleDateString('en-US', { month:
+                      'short', day: 'numeric', year: 'numeric' }) %>
+                    </span>
+                    <% } %>
+                  </div>
+                </div>
+                <% }); %>
+              </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

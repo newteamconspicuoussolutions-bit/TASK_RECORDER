@@ -1,0 +1,73 @@
+<!-- Reports List -->
+<div id="reportsList" class="hidden max-w-6xl mx-auto">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="border-b border-gray-200 px-8 py-6">
+      <h2 class="text-2xl font-semibold text-gray-900">Submitted Reports</h2>
+      <p class="text-sm text-gray-500 mt-1">View all your weekly reports</p>
+    </div>
+
+    <div class="p-8">
+      <% if (!reports || reports.length === 0) { %>
+      <div class="text-center py-12">
+        <div
+          class="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center"
+        >
+          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            ></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No Reports Yet</h3>
+        <p class="text-gray-500 text-sm">You haven't submitted any weekly reports</p>
+      </div>
+      <% } else { %>
+      <div class="space-y-3">
+        <% reports.forEach((report, index) => { %>
+        <a
+          href="/employee/dashboard/<%= user._id %>/show-report/<%= report._id %>"
+          class="block border border-gray-200 rounded-md p-5 hover:bg-gray-50 hover:border-gray-300 transition cursor-pointer"
+        >
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="font-medium text-gray-900">Week <%= report.duration %></p>
+              <p class="text-sm text-gray-500 mt-1">
+                <%= report.tasks.length %> Task<%= report.tasks.length !== 1 ? 's' : '' %> <% if
+                (Array.isArray(report.leaveInfo) && report.leaveInfo.length > 0) { %> • Leave Info
+                Available <% } %>
+              </p>
+              <p class="text-xs text-gray-400 mt-1">
+                Submitted on <%= new Date(report.createdAt).toLocaleDateString('en-US', { month:
+                'short', day: 'numeric', year: 'numeric' }) %>
+              </p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-700 font-medium">
+                Submitted
+              </span>
+              <svg
+                class="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                ></path>
+              </svg>
+            </div>
+          </div>
+        </a>
+        <% }); %>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+<!-- Report List End -->

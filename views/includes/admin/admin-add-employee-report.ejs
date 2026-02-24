@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= employee.name %> - Weekly Reports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #4f46e5;
+        --indigo-dark: #3730a3;
+        --indigo-light: #818cf8;
+        --violet: #7c3aed;
+        --emerald: #10b981;
+        --rose: #f43f5e;
+        --amber: #f59e0b;
+        --sidebar-bg: #0f0e17;
+        --sidebar-border: rgba(255, 255, 255, 0.06);
+        --body-bg: #f0f0f7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Sora', sans-serif;
+        background: var(--body-bg);
+        background-image:
+          radial-gradient(ellipse at 20% 0%, rgba(79, 70, 229, 0.06) 0%, transparent 60%),
+          radial-gradient(ellipse at 80% 100%, rgba(124, 58, 237, 0.05) 0%, transparent 60%);
+        min-height: 100vh;
+      }
+
+      /* ── Sidebar ─────────────────────────────── */
+      #sidebar {
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--sidebar-border);
+      }
+      .brand-logo {
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        border-radius: 12px;
+      }
+      .nav-link {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .nav-link:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.9);
+        transform: translateX(3px);
+      }
+      .nav-link.active {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.25), rgba(124, 58, 237, 0.15));
+        color: #fff;
+        border: 1px solid rgba(79, 70, 229, 0.3);
+      }
+      .nav-link.active svg {
+        color: var(--indigo-light);
+      }
+      .nav-link.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 60%;
+        background: linear-gradient(to bottom, var(--indigo-light), var(--violet));
+        border-radius: 0 3px 3px 0;
+      }
+      .logout-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        width: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+      .logout-btn:hover {
+        background: rgba(244, 63, 94, 0.12);
+        color: #f87171;
+      }
+
+      /* ── Header ───────────────────────────────── */
+      header {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(79, 70, 229, 0.08);
+      }
+
+      /* ── Mobile sidebar ──────────────────────── */
+      .mobile-menu {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      .mobile-menu.active {
+        transform: translateX(0);
+      }
+
+      /* ── Scrollbar ───────────────────────────── */
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 99px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      /* ── Form Card ───────────────────────────── */
+      .form-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .form-card-header {
+        padding: 20px 28px;
+        background: linear-gradient(135deg, #0f0e17, #1e1b4b);
+      }
+
+      /* ── Section Headings ─────────────────────── */
+      .section-heading {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--indigo);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-heading::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(79, 70, 229, 0.12);
+      }
+
+      /* ── Fields ──────────────────────────────── */
+      .field-label {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .field-input {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-family: 'Sora', sans-serif;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        color: #0f172a;
+        background: #f8fafc;
+      }
+      .field-input:focus {
+        border-color: var(--indigo);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        background: #fff;
+      }
+      .field-input[readonly] {
+        color: #94a3b8;
+        cursor: default;
+      }
+      .field-input[readonly]:focus {
+        border-color: #e2e8f0;
+        box-shadow: none;
+      }
+      .field-select {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-family: 'Sora', sans-serif;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        color: #0f172a;
+        background: #f8fafc;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 16px;
+        padding-right: 34px;
+      }
+      .field-select:focus {
+        border-color: var(--indigo);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        background-color: #fff;
+      }
+      .field-textarea {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-family: 'Sora', sans-serif;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        color: #0f172a;
+        background: #f8fafc;
+        resize: none;
+      }
+      .field-textarea:focus {
+        border-color: var(--indigo);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        background: #fff;
+      }
+
+      /* ── Section Block ───────────────────────── */
+      .section-block {
+        border: 1px solid rgba(79, 70, 229, 0.08);
+        border-radius: 12px;
+        padding: 18px;
+        background: #fafbff;
+      }
+
+      /* ── Task Table ──────────────────────────── */
+      .task-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .task-table thead tr {
+        background: linear-gradient(135deg, #0f0e17, #1e1b4b);
+      }
+      .task-table thead th {
+        padding: 10px 12px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: left;
+      }
+      .task-table tbody td {
+        padding: 10px 12px;
+        border-top: 1px solid #f1f5f9;
+      }
+      .task-table tbody tr:hover {
+        background: rgba(79, 70, 229, 0.02);
+      }
+
+      /* ── Buttons ─────────────────────────────── */
+      .btn-primary {
+        padding: 9px 20px;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition:
+          opacity 0.15s,
+          box-shadow 0.15s;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+      }
+      .btn-primary:hover {
+        opacity: 0.9;
+        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+      }
+
+      .btn-secondary {
+        padding: 8px 14px;
+        background: rgba(79, 70, 229, 0.07);
+        color: var(--indigo);
+        border: 1px solid rgba(79, 70, 229, 0.2);
+        border-radius: 9px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s;
+      }
+      .btn-secondary:hover {
+        background: rgba(79, 70, 229, 0.13);
+      }
+
+      .btn-blue {
+        padding: 8px 14px;
+        background: rgba(16, 185, 129, 0.08);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        border-radius: 9px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s;
+      }
+      .btn-blue:hover {
+        background: rgba(16, 185, 129, 0.14);
+      }
+
+      /* ── Half day radio cards ─────────────────── */
+      .half-day-card {
+        padding: 10px 14px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .half-day-card:has(input:checked) {
+        border-color: var(--indigo);
+        background: rgba(79, 70, 229, 0.04);
+      }
+      .half-day-card:hover {
+        border-color: #a5b4fc;
+        background: rgba(79, 70, 229, 0.02);
+      }
+
+      /* ── Leave / Attendance list items ───────── */
+      .list-item-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        padding: 10px 14px;
+      }
+      .list-item-card .remove-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #f43f5e;
+        padding: 4px;
+        border-radius: 6px;
+        transition: background 0.15s;
+        display: flex;
+        align-items: center;
+      }
+      .list-item-card .remove-btn:hover {
+        background: rgba(244, 63, 94, 0.08);
+      }
+
+      /* ── Days count chip ─────────────────────── */
+      .days-chip {
+        margin-top: 10px;
+        padding: 8px 14px;
+        background: rgba(79, 70, 229, 0.06);
+        border: 1px solid rgba(79, 70, 229, 0.12);
+        border-radius: 9px;
+        font-size: 0.8rem;
+        color: var(--indigo);
+      }
+
+      /* ── Employee chip ───────────────────────── */
+      .emp-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid rgba(79, 70, 229, 0.1);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      }
+      .emp-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.875rem;
+        color: #fff;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+      }
+
+      /* week hint */
+      #weekRangeText {
+        font-size: 0.73rem;
+        color: #94a3b8;
+        margin-top: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="flex h-screen overflow-hidden">
+      <!-- Mobile overlay -->
+      <div
+        id="mobileMenuOverlay"
+        class="fixed inset-0 bg-black bg-opacity-60 z-40 lg:hidden hidden"
+      ></div>
+
+      <!-- ── Sidebar ───────────────────────────────── -->
+      <aside
+        id="sidebar"
+        class="mobile-menu fixed lg:static inset-y-0 left-0 z-50 w-64 flex flex-col lg:transform-none"
+        style="min-width: 240px"
+      >
+        <button
+          id="closeSidebar"
+          class="lg:hidden absolute top-4 right-4 text-gray-400 hover:text-white z-10"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <!-- Brand -->
+        <div class="p-5 border-b" style="border-color: var(--sidebar-border)">
+          <div class="flex items-center gap-3">
+            <div class="brand-logo w-10 h-10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </div>
+            <div>
+              <p class="text-white font-bold text-base leading-tight">Task Recorder</p>
+              <p class="text-xs" style="color: rgba(255, 255, 255, 0.35)">Admin Panel</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nav -->
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+          <p
+            class="text-xs font-semibold uppercase tracking-widest mb-3 px-2"
+            style="color: rgba(255, 255, 255, 0.2)"
+          >
+            Navigation
+          </p>
+
+          <a href="/admin/dashboard" class="nav-link">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            Dashboard
+          </a>
+          <a href="/admin/employees" class="nav-link active">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+            Employees
+          </a>
+          <a href="/admin/create-user" class="nav-link">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+              />
+            </svg>
+            Create User
+          </a>
+          <div class="my-4 border-t" style="border-color: rgba(255, 255, 255, 0.06)"></div>
+        </nav>
+
+        <!-- Logout -->
+        <div class="p-4 border-t" style="border-color: var(--sidebar-border)">
+          <!-- Company Logo -->
+          <div class="mb-4 px-1">
+            <img
+              src="/images/Full_logo_image.png"
+              alt="Conspicuous Solutions"
+              style="
+                width: 100%;
+                max-width: 180px;
+                height: auto;
+                object-fit: contain;
+                display: block;
+                margin: 0 auto;
+                opacity: 0.85;
+                filter: brightness(1.1);
+                transition: opacity 0.2s;
+              "
+              onmouseover="this.style.opacity = '1'"
+              onmouseout="this.style.opacity = '0.85'"
+            />
+          </div>
+
+          <form action="/logout" method="GET">
+            <button type="submit" class="logout-btn">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              Sign Out
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <!-- ── Main ───────────────────────────────────── -->
+      <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+        <!-- Header -->
+        <header class="shadow-sm z-10">
+          <div class="px-4 sm:px-6 py-4">
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-3 min-w-0">
+                <button
+                  id="openSidebar"
+                  class="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 flex-shrink-0"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                </button>
+                <a
+                  href="/admin/employees/<%= employee._id %>/reports"
+                  class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition flex-shrink-0"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </a>
+                <div class="min-w-0">
+                  <h2 class="text-lg sm:text-xl font-bold text-slate-900 truncate">
+                    Add Weekly Report
+                  </h2>
+                  <p class="text-xs text-slate-400 hidden sm:block mt-0.5">
+                    <%= employee.name %> &bull;
+                    <span style="font-family: 'JetBrains Mono', monospace"
+                      ><%= employee.userId %></span
+                    >
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <div class="emp-chip">
+                  <div class="emp-avatar"><%= employee.name.charAt(0).toUpperCase() %></div>
+                  <div class="hidden sm:block">
+                    <p class="text-sm font-bold text-slate-800 leading-tight">
+                      <%= employee.name %>
+                    </p>
+                    <p
+                      class="text-xs text-slate-400"
+                      style="font-family: 'JetBrains Mono', monospace"
+                    >
+                      <%= employee.userId %>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Content -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6">
+          <div id="weeklyReportForm">
+            <form
+              class="form-card"
+              method="POST"
+              action="/admin/employees/<%= employee._id %>/create-report"
+            >
+              <!-- Form Header -->
+              <div class="form-card-header">
+                <div class="flex items-center gap-3">
+                  <div
+                    style="
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 10px;
+                      background: rgba(255, 255, 255, 0.1);
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      flex-shrink: 0;
+                    "
+                  >
+                    <svg
+                      class="w-5 h-5 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-white font-semibold text-base">Weekly Status Report</p>
+                    <p style="color: rgba(255, 255, 255, 0.45); font-size: 0.78rem">
+                      Submit weekly progress and activities
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-6 sm:p-8 space-y-8">
+                <!-- EMPLOYEE INFO -->
+                <section>
+                  <p class="section-heading">Employee Information</p>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                      <label class="field-label">Employee Name</label>
+                      <input
+                        type="text"
+                        value="<%= employee.name %>"
+                        readonly
+                        class="field-input"
+                      />
+                    </div>
+                    <div>
+                      <label class="field-label">Employee ID</label>
+                      <input
+                        type="text"
+                        value="<%= employee.userId %>"
+                        readonly
+                        class="field-input"
+                        style="font-family: 'JetBrains Mono', monospace"
+                      />
+                    </div>
+                    <div>
+                      <label class="field-label">Week</label>
+                      <input
+                        type="text"
+                        id="weekInput"
+                        name="week"
+                        placeholder="e.g. W07"
+                        required
+                        class="field-input"
+                      />
+                      <p id="weekRangeText" class="hidden"></p>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- TASKS -->
+                <section>
+                  <div class="flex items-center justify-between mb-4">
+                    <p class="section-heading" style="margin-bottom: 0; flex: 1">Tasks</p>
+                    <button
+                      type="button"
+                      onclick="addTaskRow()"
+                      class="btn-secondary"
+                      style="margin-left: 12px"
+                    >
+                      <svg
+                        class="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      Add Task
+                    </button>
+                  </div>
+                  <div style="border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0">
+                    <table class="task-table">
+                      <thead>
+                        <tr>
+                          <th>Task</th>
+                          <th>Description</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody id="taskTable">
+                        <tr class="table-row">
+                          <td>
+                            <input
+                              name="task[]"
+                              placeholder="Enter task name"
+                              required
+                              class="field-input"
+                              style="margin: 0"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              name="description[]"
+                              placeholder="Task description"
+                              required
+                              class="field-input"
+                              style="margin: 0"
+                            />
+                          </td>
+                          <td>
+                            <select name="status[]" required class="field-select" style="margin: 0">
+                              <option value="">Select Status</option>
+                              <option value="pending">Pending</option>
+                              <option value="in-progress">In Progress</option>
+                              <option value="completed">Completed</option>
+                            </select>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                <!-- LEAVE INFORMATION -->
+                <section>
+                  <p class="section-heading">Leave Information</p>
+                  <div class="section-block space-y-4">
+                    <div>
+                      <label class="field-label">Leave Type</label>
+                      <select
+                        id="leaveType"
+                        name="leaveType"
+                        class="field-select"
+                        onchange="handleLeaveTypeChange()"
+                      >
+                        <option value="">No Leave</option>
+                        <option value="single-full">Single Day – Full Day</option>
+                        <option value="single-half">Single Day – Half Day</option>
+                        <option value="multiple">Multiple Days</option>
+                        <option value="office-holiday">Office Holiday</option>
+                      </select>
+                    </div>
+
+                    <div id="singleDaySection" class="hidden">
+                      <label class="field-label">Leave Date</label>
+                      <input type="date" id="singleDate" name="singleDate" class="field-input" />
+                    </div>
+
+                    <div id="halfDaySection" class="hidden">
+                      <label class="field-label">Half Day Period</label>
+                      <div class="grid grid-cols-2 gap-3 mt-1">
+                        <label class="half-day-card relative cursor-pointer">
+                          <input
+                            type="radio"
+                            name="halfDayPeriod"
+                            value="first-half"
+                            class="peer sr-only"
+                          />
+                          <p class="text-sm font-semibold text-slate-700">First Half</p>
+                          <p class="text-xs text-slate-400 mt-0.5">Morning</p>
+                        </label>
+                        <label class="half-day-card relative cursor-pointer">
+                          <input
+                            type="radio"
+                            name="halfDayPeriod"
+                            value="second-half"
+                            class="peer sr-only"
+                          />
+                          <p class="text-sm font-semibold text-slate-700">Second Half</p>
+                          <p class="text-xs text-slate-400 mt-0.5">Afternoon</p>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div id="multipleDaysSection" class="hidden">
+                      <div class="grid grid-cols-2 gap-4">
+                        <div>
+                          <label class="field-label">From Date</label>
+                          <input
+                            type="date"
+                            id="fromDate"
+                            name="fromDate"
+                            class="field-input"
+                            onchange="calculateLeaveDays()"
+                          />
+                        </div>
+                        <div>
+                          <label class="field-label">To Date</label>
+                          <input
+                            type="date"
+                            id="toDate"
+                            name="toDate"
+                            class="field-input"
+                            onchange="calculateLeaveDays()"
+                          />
+                        </div>
+                      </div>
+                      <div id="leaveDaysCount" class="hidden days-chip">
+                        <span class="font-semibold">Total Leave Days:</span>
+                        <span id="totalDays" class="font-bold">0</span>
+                      </div>
+                    </div>
+
+                    <div id="officeHolidaySection" class="hidden">
+                      <div class="grid grid-cols-2 gap-4">
+                        <div>
+                          <label class="field-label">Holiday Date</label>
+                          <input
+                            type="date"
+                            id="holidayDate"
+                            name="holidayDate"
+                            class="field-input"
+                          />
+                        </div>
+                        <div>
+                          <label class="field-label">Holiday Name</label>
+                          <input
+                            type="text"
+                            id="holidayName"
+                            name="holidayName"
+                            placeholder="e.g. Diwali, Christmas"
+                            class="field-input"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="leaveNotesSection" class="hidden">
+                      <label class="field-label">Reason / Additional Notes</label>
+                      <textarea
+                        id="leaveNotes"
+                        name="leaveNotes"
+                        rows="3"
+                        class="field-textarea"
+                        placeholder="Enter reason for leave or additional details..."
+                      ></textarea>
+                    </div>
+
+                    <button type="button" onclick="addLeaveEntry()" class="btn-blue">
+                      <svg
+                        class="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      Add Leave
+                    </button>
+
+                    <div id="leaveList" class="space-y-2"></div>
+                    <input type="hidden" name="leaveInfo" id="leaveInfoHidden" />
+                  </div>
+                </section>
+
+                <!-- EARLY LEAVE & LATE ARRIVAL -->
+                <section>
+                  <p class="section-heading">Early Leave & Late Arrival</p>
+                  <div class="section-block space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <label class="field-label">Type</label>
+                        <select id="attendanceEventType" class="field-select">
+                          <option value="">Select Type</option>
+                          <option value="early-leave">Early Leave</option>
+                          <option value="late-arrival">Late Arrival</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="field-label">Date</label>
+                        <input type="date" id="attendanceEventDate" class="field-input" />
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                      <div>
+                        <label class="field-label">Time</label>
+                        <input type="time" id="attendanceEventTime" class="field-input" />
+                        <p class="text-xs text-slate-400 mt-1">Actual departure / arrival time</p>
+                      </div>
+                      <div>
+                        <label class="field-label">Reason</label>
+                        <input
+                          type="text"
+                          id="attendanceEventReason"
+                          placeholder="Brief reason"
+                          class="field-input"
+                        />
+                      </div>
+                    </div>
+
+                    <button type="button" onclick="addAttendanceEvent()" class="btn-blue">
+                      <svg
+                        class="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      Add Entry
+                    </button>
+
+                    <div id="attendanceEventList" class="space-y-2"></div>
+                    <input type="hidden" name="attendanceEvents" id="attendanceEventsHidden" />
+                  </div>
+                </section>
+
+                <!-- SUBMIT -->
+                <div class="flex justify-end pt-4 border-t border-slate-100">
+                  <button type="submit" class="btn-primary">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Submit Report
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      // ── Mobile sidebar
+      const openSidebar = document.getElementById('openSidebar');
+      const closeSidebar = document.getElementById('closeSidebar');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileMenuOverlay');
+      openSidebar?.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        overlay.classList.remove('hidden');
+      });
+      closeSidebar?.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.add('hidden');
+      });
+      overlay?.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.add('hidden');
+      });
+
+      // ── TASKS
+      function addTaskRow() {
+        const tbody = document.getElementById('taskTable');
+        const row = document.createElement('tr');
+        row.className = 'table-row';
+        row.innerHTML = `
+      <td><input name="task[]" placeholder="Enter task name" required class="field-input" style="margin:0;" /></td>
+      <td><input name="description[]" placeholder="Task description" required class="field-input" style="margin:0;" /></td>
+      <td>
+        <div class="flex gap-2 items-center">
+          <select name="status[]" required class="field-select" style="margin:0;flex:1;">
+            <option value="">Select Status</option>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+          <button type="button" onclick="this.closest('tr').remove()"
+            style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.15);border-radius:8px;padding:6px;color:#f43f5e;cursor:pointer;transition:background 0.15s;display:flex;align-items:center;"
+            onmouseover="this.style.background='rgba(244,63,94,0.15)'" onmouseout="this.style.background='rgba(244,63,94,0.08)'">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </td>`;
+        tbody.appendChild(row);
+      }
+
+      // ── LEAVE
+      let leaveArray = [];
+
+      function syncLeaveHidden() {
+        document.getElementById('leaveInfoHidden').value = JSON.stringify(leaveArray);
+      }
+
+      function handleLeaveTypeChange() {
+        const leaveType = document.getElementById('leaveType').value;
+        [
+          'singleDaySection',
+          'halfDaySection',
+          'multipleDaysSection',
+          'officeHolidaySection',
+          'leaveNotesSection',
+        ].forEach((id) => document.getElementById(id)?.classList.add('hidden'));
+        document.getElementById('singleDate').value = '';
+        document.getElementById('leaveNotes').value = '';
+        document.getElementById('fromDate').value = '';
+        document.getElementById('toDate').value = '';
+        document.getElementById('holidayDate').value = '';
+        document.getElementById('holidayName').value = '';
+        document
+          .querySelectorAll('input[name="halfDayPeriod"]')
+          .forEach((r) => (r.checked = false));
+        document.getElementById('leaveDaysCount')?.classList.add('hidden');
+        if (leaveType === 'single-full') {
+          document.getElementById('singleDaySection').classList.remove('hidden');
+          document.getElementById('leaveNotesSection').classList.remove('hidden');
+        } else if (leaveType === 'single-half') {
+          document.getElementById('singleDaySection').classList.remove('hidden');
+          document.getElementById('halfDaySection').classList.remove('hidden');
+          document.getElementById('leaveNotesSection').classList.remove('hidden');
+        } else if (leaveType === 'multiple') {
+          document.getElementById('multipleDaysSection').classList.remove('hidden');
+          document.getElementById('leaveNotesSection').classList.remove('hidden');
+        } else if (leaveType === 'office-holiday') {
+          document.getElementById('officeHolidaySection').classList.remove('hidden');
+        }
+      }
+
+      function calculateLeaveDays() {
+        const from = document.getElementById('fromDate').value;
+        const to = document.getElementById('toDate').value;
+        const countEl = document.getElementById('leaveDaysCount');
+        if (from && to) {
+          const diff = Math.ceil(Math.abs(new Date(to) - new Date(from)) / 86400000) + 1;
+          if (diff >= 0) {
+            document.getElementById('totalDays').textContent = diff;
+            countEl.classList.remove('hidden');
+            return;
+          }
+        }
+        countEl.classList.add('hidden');
+      }
+
+      function addLeaveEntry() {
+        const leaveType = document.getElementById('leaveType').value;
+        let text = '';
+        if (leaveType === 'single-full') {
+          const date = document.getElementById('singleDate').value;
+          const notes = document.getElementById('leaveNotes').value.trim();
+          if (!date) return alert('Please select a leave date');
+          const fmt = new Date(date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          });
+          text = `Full Day Leave on ${fmt}`;
+          if (notes) text += ` - ${notes}`;
+        } else if (leaveType === 'single-half') {
+          const date = document.getElementById('singleDate').value;
+          const period = document.querySelector('input[name="halfDayPeriod"]:checked')?.value;
+          const notes = document.getElementById('leaveNotes').value.trim();
+          if (!date) return alert('Please select a leave date');
+          if (!period) return alert('Please select half day period');
+          const fmt = new Date(date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          });
+          const periodText =
+            period === 'first-half' ? 'First Half (Morning)' : 'Second Half (Afternoon)';
+          text = `Half Day Leave (${periodText}) on ${fmt}`;
+          if (notes) text += ` - ${notes}`;
+        } else if (leaveType === 'multiple') {
+          const from = document.getElementById('fromDate').value;
+          const to = document.getElementById('toDate').value;
+          const notes = document.getElementById('leaveNotes').value.trim();
+          if (!from || !to) return alert('Please select both from and to dates');
+          const fmtFrom = new Date(from).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+          const fmtTo = new Date(to).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+          const days = document.getElementById('totalDays').textContent;
+          text = `Leave from ${fmtFrom} to ${fmtTo} (${days} days)`;
+          if (notes) text += ` - ${notes}`;
+        } else if (leaveType === 'office-holiday') {
+          const date = document.getElementById('holidayDate').value;
+          const name = document.getElementById('holidayName').value.trim();
+          if (!date) return alert('Please select holiday date');
+          if (!name) return alert('Please enter holiday name');
+          const fmt = new Date(date).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          });
+          text = `Office Holiday: ${name} on ${fmt}`;
+        } else {
+          return alert('Please select a leave type first');
+        }
+        if (text) {
+          leaveArray.push(text);
+          syncLeaveHidden();
+          renderLeaveList();
+          document.getElementById('leaveType').value = '';
+          handleLeaveTypeChange();
+        }
+      }
+
+      function removeLeave(index) {
+        leaveArray.splice(index, 1);
+        syncLeaveHidden();
+        renderLeaveList();
+      }
+
+      function escapeHtml(str) {
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+      }
+
+      function renderLeaveList() {
+        const list = document.getElementById('leaveList');
+        if (leaveArray.length === 0) {
+          list.innerHTML = '';
+          return;
+        }
+        list.innerHTML = leaveArray
+          .map(
+            (entry, i) => `
+      <div class="list-item-card">
+        <span style="font-size:0.82rem;color:#475569;flex:1;">${escapeHtml(entry)}</span>
+        <button type="button" onclick="removeLeave(${i})" class="remove-btn">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>`,
+          )
+          .join('');
+      }
+
+      // ── ATTENDANCE EVENTS
+      let attendanceEvents = [];
+
+      function syncAttendanceHidden() {
+        document.getElementById('attendanceEventsHidden').value = JSON.stringify(attendanceEvents);
+      }
+
+      function formatTimeTo12hr(time24) {
+        const [hrs, mins] = time24.split(':');
+        const h = parseInt(hrs);
+        return `${h % 12 || 12}:${mins} ${h >= 12 ? 'PM' : 'AM'}`;
+      }
+
+      function addAttendanceEvent() {
+        const type = document.getElementById('attendanceEventType').value;
+        const date = document.getElementById('attendanceEventDate').value;
+        const time = document.getElementById('attendanceEventTime').value;
+        const reason = document.getElementById('attendanceEventReason').value.trim();
+        if (!type) return alert('Select type (Early Leave or Late Arrival)');
+        if (!date) return alert('Select a date');
+        if (!time) return alert('Enter a time');
+        attendanceEvents.push({ type, date, time, reason });
+        syncAttendanceHidden();
+        renderAttendanceList();
+        document.getElementById('attendanceEventType').value = '';
+        document.getElementById('attendanceEventDate').value = '';
+        document.getElementById('attendanceEventTime').value = '';
+        document.getElementById('attendanceEventReason').value = '';
+      }
+
+      function removeAttendanceEvent(index) {
+        attendanceEvents.splice(index, 1);
+        syncAttendanceHidden();
+        renderAttendanceList();
+      }
+
+      function renderAttendanceList() {
+        const list = document.getElementById('attendanceEventList');
+        if (attendanceEvents.length === 0) {
+          list.innerHTML = '';
+          return;
+        }
+        list.innerHTML = attendanceEvents
+          .map((e, i) => {
+            const typeLabel = (e.type || '')
+              .replace('-', ' ')
+              .replace(/\b\w/g, (l) => l.toUpperCase());
+            const dateStr = e.date
+              ? new Date(e.date).toLocaleDateString('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              : '';
+            const timeStr = e.time ? formatTimeTo12hr(e.time) : '';
+            return `
+        <div class="list-item-card">
+          <div style="font-size:0.82rem;">
+            <span style="font-weight:700;color:#1e293b;">${typeLabel}</span>
+            <span style="color:#cbd5e1;margin:0 6px;">|</span>
+            <span style="color:#64748b;">${dateStr} at ${timeStr}</span>
+            ${e.reason ? `<p style="font-size:0.73rem;color:#94a3b8;font-style:italic;margin-top:3px;">"${escapeHtml(e.reason)}"</p>` : ''}
+          </div>
+          <button type="button" onclick="removeAttendanceEvent(${i})" class="remove-btn">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>`;
+          })
+          .join('');
+      }
+
+      // Sync before submit
+      document.querySelector('form').addEventListener('submit', () => {
+        syncLeaveHidden();
+        syncAttendanceHidden();
+      });
+    </script>
+  </body>
+</html>
