@@ -134,7 +134,7 @@ function formatDate(dateString) {
 }
 
 async function openEditModal(button) {
-  const employee = JSON.parse(button.dataset.employee);
+  const employee = JSON.parse(decodeURIComponent(button.dataset.employee));
   const modal = document.getElementById('editEmployeeModal');
   const modalContent = document.getElementById('modalContent');
 

@@ -279,9 +279,10 @@
 
     /* ── Status radio cards ── */
     .status-card {
-      padding: 10px 8px; border: 2px solid #e2e8f0; border-radius: 10px;
-      text-align: center; cursor: pointer; transition: all 0.15s; display: block;
-    }
+  padding: 8px 4px; border: 2px solid #e2e8f0; border-radius: 10px;
+  text-align: center; cursor: pointer; transition: all 0.15s; display: block;
+  min-height: 56px; display: flex; align-items: center; justify-content: center;
+}
     .status-card.s-pending:has(input:checked)   { border-color: #f59e0b; background: rgba(245,158,11,0.05); }
     .status-card.s-progress:has(input:checked)  { border-color: #4f46e5; background: rgba(79,70,229,0.05); }
     .status-card.s-done:has(input:checked)      { border-color: #10b981; background: rgba(16,185,129,0.05); }
@@ -333,6 +334,9 @@
     @media (max-width: 640px) {
       .page-content { padding: 16px !important; }
       .task-item { padding: 16px !important; }
+      .task-item .pr-12 { padding-right: 42px !important; }
+      .task-del-btn { top: 12px; right: 12px; padding: 6px; }
+      .task-del-btn svg { width: 14px; height: 14px; }
       .tasks-card-head { padding: 14px 16px !important; }
       .tasks-card > .p-6 { padding: 16px !important; }
       .sidebar-card .p-6 { padding: 16px !important; }
@@ -644,7 +648,7 @@
 
                   <div class="pr-12 sm:pr-14">
                     <div class="flex items-center mb-4 sm:mb-5">
-                      <div class="task-num-badge mr-3">#<%= index + 1 %></div>
+                    <div class="task-num-badge mr-3 flex-shrink-0">#<%= index + 1 %></div>
                       <h3 class="task-title">Task <%= index + 1 %></h3>
                     </div>
 
@@ -662,20 +666,20 @@
 
                     <div class="mb-4">
                       <label class="task-field-label">Status *</label>
-                      <div class="grid grid-cols-3 gap-2 sm:gap-3">
-                        <label class="status-card s-pending">
-                          <input type="radio" name="tasks[<%= index %>][status]" value="pending" <%= task.status === 'pending' ? 'checked' : '' %> class="sr-only">
-                          <span style="font-size:0.72rem;font-weight:700;color:<%= task.status==='pending'?'#b45309':'#94a3b8' %>;">Pending</span>
-                        </label>
-                        <label class="status-card s-progress">
-                          <input type="radio" name="tasks[<%= index %>][status]" value="in-progress" <%= task.status === 'in-progress' ? 'checked' : '' %> class="sr-only">
-                          <span style="font-size:0.72rem;font-weight:700;color:<%= task.status==='in-progress'?'#4f46e5':'#94a3b8' %>;">In Progress</span>
-                        </label>
-                        <label class="status-card s-done">
-                          <input type="radio" name="tasks[<%= index %>][status]" value="completed" <%= task.status === 'completed' ? 'checked' : '' %> class="sr-only">
-                          <span style="font-size:0.72rem;font-weight:700;color:<%= task.status==='completed'?'#047857':'#94a3b8' %>;">Completed</span>
-                        </label>
-                      </div>
+                    <div class="grid grid-cols-3 gap-1 sm:gap-3">
+  <label class="status-card s-pending">
+    <input type="radio" name="tasks[<%= index %>][status]" value="pending" <%= task.status === 'pending' ? 'checked' : '' %> class="sr-only">
+    <span style="font-size:0.65rem;font-weight:700;color:<%= task.status==='pending'?'#b45309':'#94a3b8' %>;line-height:1.2;word-break:break-word;">Pending</span>
+  </label>
+  <label class="status-card s-progress">
+    <input type="radio" name="tasks[<%= index %>][status]" value="in-progress" <%= task.status === 'in-progress' ? 'checked' : '' %> class="sr-only">
+    <span style="font-size:0.65rem;font-weight:700;color:<%= task.status==='in-progress'?'#4f46e5':'#94a3b8' %>;line-height:1.2;word-break:break-word;">In Progress</span>
+  </label>
+  <label class="status-card s-done">
+    <input type="radio" name="tasks[<%= index %>][status]" value="completed" <%= task.status === 'completed' ? 'checked' : '' %> class="sr-only">
+    <span style="font-size:0.65rem;font-weight:700;color:<%= task.status==='completed'?'#047857':'#94a3b8' %>;line-height:1.2;word-break:break-word;">Completed</span>
+  </label>
+</div>
                     </div>
 
                     <div class="flex items-center space-x-4 pt-4 border-t border-gray-100">
@@ -1028,8 +1032,8 @@
             </svg>
           </button>
           <div class="pr-12 sm:pr-14">
-            <div class="flex items-center mb-4 sm:mb-5">
-              <div class="task-num-badge mr-3">#${newTaskIndex + 1}</div>
+           <div class="flex items-center mb-4 sm:mb-5">
+              <div class="task-num-badge mr-3 flex-shrink-0">#${newTaskIndex + 1}</div>
               <h3 class="task-title">Task ${newTaskIndex + 1}</h3>
             </div>
             <div class="mb-4">
@@ -1044,19 +1048,19 @@
             </div>
             <div class="mb-4">
               <label class="task-field-label">Status *</label>
-              <div class="grid grid-cols-3 gap-2 sm:gap-3">
+              <div class="grid grid-cols-3 gap-1 sm:gap-3">
                 <label class="status-card s-pending">
-                  <input type="radio" name="tasks[${newTaskIndex}][status]" value="pending" checked class="sr-only">
-                  <span style="font-size:0.72rem;font-weight:700;color:#b45309;">Pending</span>
-                </label>
-                <label class="status-card s-progress">
-                  <input type="radio" name="tasks[${newTaskIndex}][status]" value="in-progress" class="sr-only">
-                  <span style="font-size:0.72rem;font-weight:700;color:#94a3b8;">In Progress</span>
-                </label>
-                <label class="status-card s-done">
-                  <input type="radio" name="tasks[${newTaskIndex}][status]" value="completed" class="sr-only">
-                  <span style="font-size:0.72rem;font-weight:700;color:#94a3b8;">Done</span>
-                </label>
+  <input type="radio" name="tasks[${newTaskIndex}][status]" value="pending" checked class="sr-only">
+  <span style="font-size:0.65rem;font-weight:700;color:#b45309;line-height:1.2;word-break:break-word;">Pending</span>
+</label>
+<label class="status-card s-progress">
+  <input type="radio" name="tasks[${newTaskIndex}][status]" value="in-progress" class="sr-only">
+  <span style="font-size:0.65rem;font-weight:700;color:#94a3b8;line-height:1.2;word-break:break-word;">In Progress</span>
+</label>
+<label class="status-card s-done">
+  <input type="radio" name="tasks[${newTaskIndex}][status]" value="completed" class="sr-only">
+  <span style="font-size:0.65rem;font-weight:700;color:#94a3b8;line-height:1.2;word-break:break-word;">Completed</span>
+</label>
               </div>
             </div>
           </div>

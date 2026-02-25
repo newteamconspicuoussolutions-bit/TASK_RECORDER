@@ -1140,7 +1140,7 @@
                         <!-- Edit -->
                         <button
                           onclick="openEditModal(this)"
-                          data-employee="<%- JSON.stringify(employee) %>"
+                          data-employee="<%- encodeURIComponent(JSON.stringify(employee)) %>"
                           class="action-btn edit"
                           title="Edit Employee"
                         >
@@ -1741,7 +1741,7 @@
 
       // ── Edit modal ─────────────────────────────────────────
       function openEditModal(btn) {
-        const employee = JSON.parse(btn.dataset.employee);
+        const employee = JSON.parse(decodeURIComponent(btn.dataset.employee));
         document.getElementById('editEmployeeId').value = employee._id;
         document.getElementById('editName').value = employee.name;
         document.getElementById('editUserId').value = employee.userId.split('@')[0];
