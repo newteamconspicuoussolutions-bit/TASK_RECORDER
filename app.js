@@ -6,6 +6,7 @@ const PORT = process.env.PORT;
 const path = require('path');
 
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const crypto = require('crypto');
@@ -49,11 +50,15 @@ app.use(
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.ATLASDB_URL,
+      ttl: 24 * 60 * 60, // 1 day in seconds
+    }),
     cookie: {
       maxAge: 24 * 60 * 60 * 1000,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      // secure: false,
+      //secure:false
     },
   }),
 );
