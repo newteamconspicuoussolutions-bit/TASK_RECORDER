@@ -42,13 +42,18 @@ const Task = require('./model/task.js');
 const WeeklyStatusReport = require('./model/weeklyStatusReport.js');
 
 // SESSION SETUP
+app.set('trust proxy', 1);
+
 app.use(
   session({
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 24 * 60 * 60 * 1000 },
-    secure: process.env.NODE_ENV === 'production',
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    },
   }),
 );
 
