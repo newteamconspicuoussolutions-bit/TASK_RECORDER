@@ -58,7 +58,6 @@ app.use(
       maxAge: 24 * 60 * 60 * 1000,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      //secure:false
     },
   }),
 );
@@ -1262,8 +1261,6 @@ app.get('/logout', (req, res) => {
 
 // ===================== SERVER =====================
 
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
