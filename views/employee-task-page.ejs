@@ -728,6 +728,33 @@
         margin-top: 4px;
         font-weight: 500;
       }
+      /* ── Mobile sidebar scroll fix ───────────────── */
+      @media (max-width: 1023px) {
+        aside {
+          overflow-y: auto !important;
+          overflow-x: hidden;
+        }
+
+        aside nav {
+          flex: 1;
+          overflow-y: visible; /* let the aside handle scrolling */
+          overflow-x: hidden;
+        }
+
+        .sidebar-bottom-section {
+          position: sticky;
+          bottom: 0;
+          background: var(--sidebar-bg);
+          z-index: 10;
+          border-top: 1px solid var(--sidebar-border);
+        }
+      }
+      /* ── Bottom breathing room on mobile ─────────── */
+      @media (max-width: 1023px) {
+        .content-scroll > div {
+          padding-bottom: 5rem !important; /* 80px space at bottom */
+        }
+      }
     </style>
   </head>
   <body>

@@ -281,7 +281,6 @@
         border: 1px solid rgba(244, 63, 94, 0.15);
       }
 
-      /* action buttons */
       .action-btn {
         width: 32px;
         height: 32px;
@@ -323,13 +322,9 @@
       }
       .toggle-track.on {
         background: linear-gradient(90deg, var(--indigo), var(--violet));
-        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.3);
       }
       .toggle-track.off {
         background: #e2e8f0;
-      }
-      .toggle-track:hover.on {
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
       }
       .toggle-thumb {
         width: 18px;
@@ -383,28 +378,44 @@
         align-items: center;
         justify-content: center;
         padding: 16px;
+        /* Mobile: allow scrolling on small viewports */
+        overflow-y: auto;
       }
+
       .modal-box {
         background: #fff;
         border-radius: 20px;
         box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
-        max-height: 90vh;
+        width: 100%;
+        max-height: 92vh;
         overflow: hidden;
         transform: scale(0.95);
         opacity: 0;
         transition: all 0.2s ease;
+        /* Ensure modal doesn't overflow on tiny screens */
+        display: flex;
+        flex-direction: column;
+        margin: auto;
       }
       .modal-box.open {
         transform: scale(1);
         opacity: 1;
       }
 
+      /* Modal body scrollable */
+      .modal-body-scroll {
+        overflow-y: auto;
+        flex: 1;
+        -webkit-overflow-scrolling: touch;
+      }
+
       .modal-header {
-        padding: 20px 24px;
+        padding: 16px 20px;
         background: linear-gradient(135deg, #0f0e17, #1e1b4b);
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-shrink: 0;
       }
       .modal-close-btn {
         width: 32px;
@@ -418,9 +429,22 @@
         border: none;
         cursor: pointer;
         transition: background 0.15s;
+        flex-shrink: 0;
       }
       .modal-close-btn:hover {
         background: rgba(255, 255, 255, 0.2);
+      }
+
+      .modal-footer {
+        padding: 14px 20px;
+        border-top: 1px solid #f1f5f9;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-shrink: 0;
+        /* On mobile: stack buttons if very narrow */
       }
 
       .field-label {
@@ -448,12 +472,39 @@
         box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
       }
 
+      /* ── ROLE CARDS — key mobile fix ──────────── */
+      .role-cards-grid {
+        display: grid;
+        /* On mobile: single column stacked vertically */
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      @media (min-width: 480px) {
+        .role-cards-grid {
+          /* On slightly larger mobile: horizontal 3 columns */
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
       .role-card {
         border: 2px solid #e2e8f0;
         border-radius: 12px;
-        padding: 14px;
+        padding: 12px 14px;
         cursor: pointer;
         transition: all 0.2s;
+        /* Horizontal layout on mobile single-col */
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      @media (min-width: 480px) {
+        .role-card {
+          /* Vertical layout on multi-col */
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+          padding: 14px;
+        }
       }
       .role-card:hover {
         border-color: #a5b4fc;
@@ -468,6 +519,36 @@
         background: rgba(244, 63, 94, 0.04);
       }
 
+      .role-card-text {
+        flex: 1;
+      }
+      .role-card-text p:first-child {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.2;
+      }
+      .role-card-text p:last-child {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        margin-top: 2px;
+      }
+
+      .role-card-icon {
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      @media (min-width: 480px) {
+        .role-card-icon {
+          width: 24px;
+          height: 24px;
+        }
+      }
+
       .meta-box {
         background: #f8fafc;
         border-radius: 10px;
@@ -477,21 +558,25 @@
       .meta-row {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
+        gap: 8px;
       }
       .meta-label {
         font-size: 0.78rem;
         color: #94a3b8;
+        flex-shrink: 0;
       }
       .meta-value {
         font-size: 0.8rem;
         font-weight: 600;
         color: #0f172a;
         font-family: 'JetBrains Mono', monospace;
+        word-break: break-all;
+        text-align: right;
       }
 
       .btn-primary {
-        padding: 9px 20px;
+        padding: 10px 20px;
         background: linear-gradient(135deg, var(--indigo), var(--violet));
         color: #fff;
         border: none;
@@ -502,11 +587,13 @@
         cursor: pointer;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 6px;
         transition:
           opacity 0.15s,
           box-shadow 0.15s;
         box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+        white-space: nowrap;
       }
       .btn-primary:hover {
         opacity: 0.9;
@@ -514,7 +601,7 @@
       }
 
       .btn-ghost {
-        padding: 9px 18px;
+        padding: 10px 18px;
         background: none;
         border: 1.5px solid #e2e8f0;
         border-radius: 10px;
@@ -524,6 +611,7 @@
         color: #475569;
         cursor: pointer;
         transition: all 0.15s;
+        white-space: nowrap;
       }
       .btn-ghost:hover {
         background: #f8fafc;
@@ -531,7 +619,7 @@
       }
 
       .btn-danger {
-        padding: 9px 20px;
+        padding: 10px 20px;
         background: linear-gradient(135deg, #f43f5e, #e11d48);
         color: #fff;
         border: none;
@@ -542,12 +630,26 @@
         cursor: pointer;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 6px;
         transition: opacity 0.15s;
         box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
+        white-space: nowrap;
       }
       .btn-danger:hover {
         opacity: 0.9;
+      }
+
+      /* Full-width buttons on very small screens */
+      @media (max-width: 380px) {
+        .modal-footer {
+          flex-direction: column;
+        }
+        .btn-primary,
+        .btn-ghost,
+        .btn-danger {
+          width: 100%;
+        }
       }
 
       /* alerts */
@@ -576,7 +678,6 @@
         color: #92400e;
       }
 
-      /* delete modal specifics */
       .delete-warning-item {
         display: flex;
         align-items: center;
@@ -592,7 +693,6 @@
         flex-shrink: 0;
       }
 
-      /* footer showing count */
       .footer-count {
         font-size: 0.82rem;
         color: #94a3b8;
@@ -602,12 +702,6 @@
         color: #475569;
       }
 
-      /* status modal */
-      #statusModal .modal-box {
-        max-width: 400px;
-      }
-
-      /* notify links  */
       .header-action-link {
         font-size: 0.75rem;
         font-weight: 600;
@@ -624,6 +718,51 @@
         background: rgba(79, 70, 229, 0.13);
       }
 
+      /* UserId input combo */
+      .userid-combo {
+        display: flex;
+        border-radius: 10px;
+        border: 1.5px solid #e2e8f0;
+        overflow: hidden;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .userid-combo:focus-within {
+        border-color: var(--indigo);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      }
+      .userid-combo input {
+        flex: 1;
+        min-width: 0;
+        padding: 9px 12px;
+        outline: none;
+        font-size: 0.85rem;
+        font-family: 'JetBrains Mono', monospace;
+        text-transform: uppercase;
+        color: #1e293b;
+        background: transparent;
+        border: none;
+      }
+      .userid-combo .domain-suffix {
+        padding: 9px 12px;
+        background: #f8fafc;
+        border-left: 1.5px solid #e2e8f0;
+        color: #94a3b8;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      /* On tiny screens shorten the suffix */
+      @media (max-width: 380px) {
+        .userid-combo .domain-suffix {
+          font-size: 0.72rem;
+          padding: 9px 8px;
+        }
+      }
+
       @media (max-width: 640px) {
         thead th,
         .employee-row td {
@@ -632,6 +771,18 @@
         .stat-value {
           font-size: 1.6rem;
         }
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .animate-spin {
+        animation: spin 1s linear infinite;
       }
     </style>
   </head>
@@ -649,7 +800,6 @@
         class="mobile-menu fixed lg:static inset-y-0 left-0 z-50 w-64 flex flex-col lg:transform-none"
         style="min-width: 240px"
       >
-        <!-- close btn mobile -->
         <button
           id="closeSidebar"
           class="lg:hidden absolute top-4 right-4 text-gray-400 hover:text-white z-10"
@@ -663,23 +813,6 @@
             />
           </svg>
         </button>
-
-        <!-- Brand -->
-        <!-- <div class="p-5 border-b" style="border-color:var(--sidebar-border)">
-      <div class="flex items-center gap-3">
-        <div class="brand-logo w-10 h-10 flex items-center justify-center flex-shrink-0">
-          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-          </svg>
-        </div>
-        <div>
-          <p class="text-white font-bold text-base leading-tight">Task Recorder</p>
-          <p class="text-xs" style="color:rgba(255,255,255,0.35)">Admin Panel</p>
-        </div>
-      </div>
-    </div> -->
-
-        <!-- Brand -->
         <div class="p-5 border-b" style="border-color: var(--sidebar-border)">
           <div class="flex items-center gap-3">
             <div class="brand-logo w-10 h-10 flex items-center justify-center flex-shrink-0">
@@ -699,7 +832,6 @@
           </div>
         </div>
 
-        <!-- Nav -->
         <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
           <p
             class="text-xs font-semibold uppercase tracking-widest mb-3 px-2"
@@ -707,7 +839,6 @@
           >
             Navigation
           </p>
-
           <a href="/admin/dashboard" class="nav-link active">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -719,7 +850,6 @@
             </svg>
             Dashboard
           </a>
-
           <a href="/admin/employees" class="nav-link">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -731,7 +861,6 @@
             </svg>
             Employees
           </a>
-
           <a href="/admin/create-user" class="nav-link">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -743,13 +872,10 @@
             </svg>
             Create User
           </a>
-
           <div class="my-4 border-t" style="border-color: rgba(255, 255, 255, 0.06)"></div>
         </nav>
 
-        <!-- Logout -->
         <div class="p-4 border-t" style="border-color: var(--sidebar-border)">
-          <!-- Company Logo -->
           <div class="mb-4 px-1">
             <img
               src="/images/Full_logo_image.png"
@@ -769,7 +895,6 @@
               onmouseout="this.style.opacity = '0.85'"
             />
           </div>
-
           <form action="/logout" method="GET">
             <button type="submit" class="logout-btn">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -788,11 +913,9 @@
 
       <!-- ── Main ───────────────────────────────────── -->
       <div class="flex-1 flex flex-col overflow-hidden min-w-0">
-        <!-- Header -->
         <header class="shadow-sm z-10">
           <div class="px-4 sm:px-6 py-4">
             <div class="flex items-center justify-between gap-4">
-              <!-- Left: hamburger + title -->
               <div class="flex items-center gap-3 min-w-0">
                 <button
                   id="openSidebar"
@@ -816,8 +939,6 @@
                   </p>
                 </div>
               </div>
-
-              <!-- Center: action links -->
               <div class="hidden md:flex items-center gap-2 flex-shrink-0">
                 <a href="/admin/test/notify-me" class="header-action-link">notify-me</a>
                 <a href="/admin/check-subscriptions" class="header-action-link"
@@ -825,11 +946,9 @@
                 >
                 <a href="/admin/test/notify-saturday" class="header-action-link">notify-saturday</a>
               </div>
-
-              <!-- Right: avatar -->
               <div class="flex items-center gap-2 flex-shrink-0">
                 <div
-                  class="flex items-center gap-2 px-3 py-2 rounded-12 hover:bg-slate-50 cursor-pointer transition rounded-xl"
+                  class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-slate-50 cursor-pointer transition"
                 >
                   <div
                     class="w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
@@ -849,7 +968,6 @@
           </div>
         </header>
 
-        <!-- Content -->
         <main class="flex-1 overflow-y-auto p-4 sm:p-6">
           <!-- Stat cards -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -875,7 +993,6 @@
                 </svg>
               </div>
             </div>
-
             <div class="stat-card flex items-center justify-between">
               <div>
                 <p class="stat-label">Current Employees</p>
@@ -898,7 +1015,6 @@
                 </svg>
               </div>
             </div>
-
             <div class="stat-card flex items-center justify-between">
               <div>
                 <p class="stat-label">Administrators</p>
@@ -925,12 +1041,10 @@
 
           <!-- Table card -->
           <div class="table-card">
-            <!-- Filters + Search -->
             <div class="p-4 sm:p-5 border-b border-slate-100">
               <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <!-- Pills -->
                 <div
-                  class="flex items-center gap-1.5 bg-slate-50 p-1 rounded-11 rounded-xl border border-slate-100 overflow-x-auto flex-shrink-0"
+                  class="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl border border-slate-100 overflow-x-auto flex-shrink-0"
                 >
                   <button
                     onclick="filterEmployees('all')"
@@ -957,8 +1071,6 @@
                     Ex-Employees
                   </button>
                 </div>
-
-                <!-- Search -->
                 <div class="relative w-full sm:max-w-xs">
                   <svg
                     class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"
@@ -984,7 +1096,6 @@
               </div>
             </div>
 
-            <!-- Table -->
             <div class="overflow-x-auto">
               <table class="w-full">
                 <thead>
@@ -1047,7 +1158,6 @@
                     data-name="<%= employee.name.toLowerCase() %>"
                     data-email="<%= employee.userId.toLowerCase() %>"
                   >
-                    <!-- Name -->
                     <td>
                       <div class="flex items-center gap-3">
                         <div class="avatar"><%= employee.name.charAt(0).toUpperCase() %></div>
@@ -1057,8 +1167,6 @@
                         </div>
                       </div>
                     </td>
-
-                    <!-- userId -->
                     <td class="hidden md:table-cell">
                       <span
                         style="
@@ -1069,8 +1177,6 @@
                         ><%= employee.userId %></span
                       >
                     </td>
-
-                    <!-- Role badge -->
                     <td>
                       <% if (employee.role === 'admin') { %>
                       <span class="badge admin">
@@ -1107,19 +1213,14 @@
                       </span>
                       <% } %>
                     </td>
-
-                    <!-- Joined -->
                     <td class="hidden lg:table-cell">
                       <span style="font-size: 0.82rem; color: #64748b">
                         <%= new Date(employee.createdAt).toLocaleDateString('en-US', { year:
                         'numeric', month: 'short', day: 'numeric' }) %>
                       </span>
                     </td>
-
-                    <!-- Actions -->
                     <td>
                       <div class="flex items-center gap-1">
-                        <!-- Toggle -->
                         <button
                           onclick="
                             toggleUserStatus(this, '<%= employee.name %>', '<%= employee.userId %>')
@@ -1136,8 +1237,6 @@
                           <div class="toggle-track off"><div class="toggle-thumb"></div></div>
                           <% } %>
                         </button>
-
-                        <!-- Edit -->
                         <button
                           onclick="openEditModal(this)"
                           data-employee="<%- encodeURIComponent(JSON.stringify(employee)) %>"
@@ -1158,8 +1257,6 @@
                             />
                           </svg>
                         </button>
-
-                        <!-- Delete -->
                         <button
                           onclick="
                             openDeleteModal(
@@ -1193,7 +1290,6 @@
               </table>
             </div>
 
-            <!-- Footer -->
             <div class="px-5 py-4 border-t border-slate-100 bg-slate-50">
               <p class="footer-count">
                 Showing <span id="showingCount"><%= employees.length %></span> of
@@ -1207,7 +1303,7 @@
 
     <!-- ═══════════════════ EDIT MODAL ═══════════════════ -->
     <div id="editEmployeeModal" class="modal-overlay hidden">
-      <div class="modal-box w-full max-w-2xl" id="modalContent" style="overflow-y: auto">
+      <div class="modal-box w-full" style="max-width: 560px" id="modalContent">
         <!-- Header -->
         <div class="modal-header">
           <div class="flex items-center gap-3">
@@ -1220,6 +1316,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                flex-shrink: 0;
               "
             >
               <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1250,8 +1347,8 @@
           </button>
         </div>
 
-        <!-- Body -->
-        <div class="p-6 space-y-5 overflow-y-auto" style="max-height: calc(90vh - 160px)">
+        <!-- Scrollable body -->
+        <div class="modal-body-scroll p-5 space-y-5">
           <!-- Alerts -->
           <div id="modalSuccessAlert" class="alert success hidden">
             <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -1307,41 +1404,23 @@
               </div>
             </div>
 
-            <!-- UserID -->
+            <!-- UserID — fixed combo with responsive domain suffix -->
             <div>
               <label for="editUserId" class="field-label"
                 >User ID <span style="color: #f43f5e">*</span></label
               >
-              <div
-                class="flex rounded-xl border border-slate-200 focus-within:border-indigo-500"
-                style="transition: box-shadow 0.2s"
-                onfocusin="this.style.boxShadow='0 0 0 3px rgba(79,70,229,0.1)'"
-                onfocusout="this.style.boxShadow='none'"
-              >
-                <input
-                  type="text"
-                  id="editUserId"
-                  name="userId"
-                  required
-                  placeholder="EMP001"
-                  class="flex-1 px-3 py-2.5 rounded-l-xl outline-none text-sm uppercase text-slate-800"
-                  style="background: transparent; font-family: 'JetBrains Mono', monospace"
-                />
-                <span
-                  class="px-3 py-2.5 bg-slate-50 border-l border-slate-200 text-slate-400 text-sm rounded-r-xl select-none flex items-center"
-                  >@conspicuous.com</span
-                >
+              <div class="userid-combo">
+                <input type="text" id="editUserId" name="userId" required placeholder="EMP001" />
+                <span class="domain-suffix">@conspicuous.com</span>
               </div>
             </div>
 
             <!-- Password -->
             <div>
-              <label for="editPassword" class="field-label"
-                >New Password
-                <span style="color: #94a3b8; font-weight: 400"
-                  >(Leave blank to keep current)</span
-                ></label
-              >
+              <label for="editPassword" class="field-label">
+                New Password
+                <span style="color: #94a3b8; font-weight: 400">(Leave blank to keep current)</span>
+              </label>
               <div class="relative">
                 <svg
                   class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"
@@ -1397,10 +1476,10 @@
               </p>
             </div>
 
-            <!-- Role -->
+            <!-- Role — FIXED: responsive grid, horizontal on mobile, 3-col on wider -->
             <div>
               <p class="field-label">User Role <span style="color: #f43f5e">*</span></p>
-              <div class="grid grid-cols-3 gap-3">
+              <div class="role-cards-grid">
                 <label class="role-card">
                   <input
                     type="radio"
@@ -1409,9 +1488,9 @@
                     id="editRoleEmployee"
                     class="hidden"
                   />
-                  <div class="flex flex-col items-start gap-2">
+                  <div class="role-card-icon">
                     <svg
-                      class="w-5 h-5"
+                      class="w-full h-full"
                       style="color: var(--indigo)"
                       fill="none"
                       stroke="currentColor"
@@ -1424,12 +1503,10 @@
                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                       />
                     </svg>
-                    <div>
-                      <p class="text-sm font-semibold text-slate-800">Employee</p>
-                      <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 2px">
-                        Standard access
-                      </p>
-                    </div>
+                  </div>
+                  <div class="role-card-text">
+                    <p>Employee</p>
+                    <p>Standard access</p>
                   </div>
                 </label>
 
@@ -1441,9 +1518,9 @@
                     id="editRoleAdmin"
                     class="hidden"
                   />
-                  <div class="flex flex-col items-start gap-2">
+                  <div class="role-card-icon">
                     <svg
-                      class="w-5 h-5"
+                      class="w-full h-full"
                       style="color: #7c3aed"
                       fill="none"
                       stroke="currentColor"
@@ -1456,12 +1533,10 @@
                         d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                       />
                     </svg>
-                    <div>
-                      <p class="text-sm font-semibold text-slate-800">Administrator</p>
-                      <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 2px">
-                        Full system access
-                      </p>
-                    </div>
+                  </div>
+                  <div class="role-card-text">
+                    <p>Administrator</p>
+                    <p>Full system access</p>
                   </div>
                 </label>
 
@@ -1473,9 +1548,9 @@
                     id="editRoleExEmployee"
                     class="hidden"
                   />
-                  <div class="flex flex-col items-start gap-2">
+                  <div class="role-card-icon">
                     <svg
-                      class="w-5 h-5"
+                      class="w-full h-full"
                       style="color: #f43f5e"
                       fill="none"
                       stroke="currentColor"
@@ -1488,12 +1563,10 @@
                         d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
                       />
                     </svg>
-                    <div>
-                      <p class="text-sm font-semibold text-slate-800">Ex-Employee</p>
-                      <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 2px">
-                        Revoked access
-                      </p>
-                    </div>
+                  </div>
+                  <div class="role-card-text">
+                    <p>Ex-Employee</p>
+                    <p>Revoked access</p>
                   </div>
                 </label>
               </div>
@@ -1520,31 +1593,29 @@
             <!-- Meta info -->
             <div class="meta-box space-y-2">
               <div class="meta-row">
-                <span class="meta-label">Employee ID</span
-                ><span class="meta-value" id="displayEmployeeId">—</span>
+                <span class="meta-label">Employee ID</span>
+                <span class="meta-value" id="displayEmployeeId">—</span>
               </div>
               <div
                 class="meta-row"
                 style="padding-top: 8px; border-top: 1px solid #f1f5f9; margin-top: 8px"
               >
-                <span class="meta-label">Created</span
-                ><span class="meta-value" id="displayCreatedAt">—</span>
+                <span class="meta-label">Created</span>
+                <span class="meta-value" id="displayCreatedAt">—</span>
               </div>
               <div
                 class="meta-row"
                 style="padding-top: 8px; border-top: 1px solid #f1f5f9; margin-top: 8px"
               >
-                <span class="meta-label">Last Updated</span
-                ><span class="meta-value" id="displayUpdatedAt">—</span>
+                <span class="meta-label">Last Updated</span>
+                <span class="meta-value" id="displayUpdatedAt">—</span>
               </div>
             </div>
           </form>
         </div>
 
         <!-- Footer -->
-        <div
-          class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-3"
-        >
+        <div class="modal-footer">
           <button type="button" onclick="closeEditModal()" class="btn-ghost">Cancel</button>
           <button type="button" onclick="updateEmployee()" id="updateBtn" class="btn-primary">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1563,7 +1634,7 @@
 
     <!-- ═══════════════════ DELETE MODAL ═══════════════════ -->
     <div id="deleteModal" class="modal-overlay hidden">
-      <div class="modal-box w-full max-w-md" id="deleteModalContent">
+      <div class="modal-box w-full" style="max-width: 420px" id="deleteModalContent">
         <div class="p-6 text-center border-b border-slate-100">
           <div
             style="
@@ -1595,8 +1666,7 @@
           <h3 class="mt-4 text-xl font-bold text-slate-900">Delete Employee</h3>
           <p class="mt-1 text-sm text-slate-500">This action cannot be undone.</p>
         </div>
-
-        <div class="p-6 space-y-3">
+        <div class="p-5 space-y-3">
           <div class="meta-box">
             <p class="text-sm font-semibold text-slate-800" id="deleteEmployeeName">—</p>
             <p
@@ -1635,8 +1705,7 @@
             </div>
           </div>
         </div>
-
-        <div class="px-6 pb-6 flex justify-end gap-3">
+        <div class="modal-footer">
           <button onclick="closeDeleteModal()" class="btn-ghost">Cancel</button>
           <button id="confirmDeleteBtn" class="btn-danger">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1655,13 +1724,12 @@
 
     <!-- ═══════════════════ STATUS MODAL ═══════════════════ -->
     <div id="statusModal" class="modal-overlay hidden">
-      <div class="modal-box w-full max-w-sm" id="statusModalContent">
-        <div class="p-6 border-b border-slate-100">
+      <div class="modal-box w-full" style="max-width: 380px" id="statusModalContent">
+        <div class="p-5 border-b border-slate-100">
           <h3 id="statusTitle" class="text-base font-bold text-slate-900">Change Status</h3>
           <p id="statusMessage" class="mt-1 text-sm text-slate-500">Confirm the action below</p>
         </div>
-
-        <div class="p-6 space-y-4">
+        <div class="p-5 space-y-4">
           <div>
             <p
               style="
@@ -1688,8 +1756,7 @@
             <span id="currentStatusBadge" class="text-sm font-bold text-emerald-600">Active</span>
           </div>
         </div>
-
-        <div class="px-6 pb-6 flex justify-end gap-3">
+        <div class="modal-footer">
           <button onclick="closeStatusModal()" class="btn-ghost">Cancel</button>
           <button id="confirmStatusBtn" class="btn-primary">Confirm</button>
         </div>
@@ -1697,24 +1764,7 @@
     </div>
 
     <!-- ═══════════════════ JS ═══════════════════ -->
-    <style>
-      @keyframes spin {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      .animate-spin {
-        animation: spin 1s linear infinite;
-      }
-    </style>
-
     <script>
-      // ── Mobile sidebar handled by admin-dashboard.js ───────
-
-      // ── Filter ─────────────────────────────────────────────
       function filterEmployees(role) {
         document.querySelectorAll('.filter-pill').forEach((b) => b.classList.remove('active'));
         document.getElementById('filter-' + role).classList.add('active');
@@ -1727,7 +1777,6 @@
         document.getElementById('showingCount').textContent = count;
       }
 
-      // ── Search ─────────────────────────────────────────────
       function searchEmployees() {
         const q = document.getElementById('searchInput').value.toLowerCase();
         let count = 0;
@@ -1739,7 +1788,6 @@
         document.getElementById('showingCount').textContent = count;
       }
 
-      // ── Edit modal ─────────────────────────────────────────
       function openEditModal(btn) {
         const employee = JSON.parse(decodeURIComponent(btn.dataset.employee));
         document.getElementById('editEmployeeId').value = employee._id;
@@ -1771,16 +1819,19 @@
           });
         });
       }
+
       function closeEditModal() {
         const modal = document.getElementById('editEmployeeModal');
         const box = document.getElementById('modalContent');
         box.classList.remove('open');
         setTimeout(() => modal.classList.add('hidden'), 200);
       }
+
       function toggleEditPassword() {
         const input = document.getElementById('editPassword');
         input.type = input.type === 'password' ? 'text' : 'password';
       }
+
       async function updateEmployee() {
         const id = document.getElementById('editEmployeeId').value;
         const name = document.getElementById('editName').value.trim();
@@ -1816,6 +1867,7 @@
         btn.disabled = false;
         btn.style.opacity = '1';
       }
+
       function showModalSuccess(msg) {
         document.getElementById('modalSuccessMessage').textContent = msg;
         document.getElementById('modalSuccessAlert').classList.remove('hidden');
@@ -1827,79 +1879,50 @@
         document.getElementById('modalSuccessAlert').classList.add('hidden');
       }
 
-      // ── Delete modal ───────────────────────────────────────
       function openDeleteModal(employeeName, employeeEmail, employeeId) {
+        document.getElementById('deleteEmployeeName').textContent = employeeName;
+        document.getElementById('deleteEmployeeUserId').textContent = employeeEmail;
+        document.getElementById('confirmDeleteBtn').setAttribute('data-employee-id', employeeId);
         const modal = document.getElementById('deleteModal');
-        const modalContent = document.getElementById('deleteModalContent');
-        const nameElement = document.getElementById('deleteEmployeeName');
-        const emailElement = document.getElementById('deleteEmployeeUserId');
-        const confirmBtn = document.getElementById('confirmDeleteBtn');
-
-        if (nameElement) nameElement.textContent = employeeName;
-        if (emailElement) emailElement.textContent = employeeEmail;
-
+        const box = document.getElementById('deleteModalContent');
         modal.classList.remove('hidden');
-        requestAnimationFrame(() => modalContent.classList.add('open'));
-
-        confirmBtn.setAttribute('data-employee-id', employeeId);
+        requestAnimationFrame(() => box.classList.add('open'));
       }
 
       function closeDeleteModal() {
         const modal = document.getElementById('deleteModal');
-        const modalContent = document.getElementById('deleteModalContent');
-        modalContent.classList.remove('open');
+        const box = document.getElementById('deleteModalContent');
+        box.classList.remove('open');
         setTimeout(() => modal.classList.add('hidden'), 200);
       }
 
       document.getElementById('confirmDeleteBtn')?.addEventListener('click', async function () {
         const employeeId = this.getAttribute('data-employee-id');
         if (!employeeId) return;
-
-        // Loading state
         this.disabled = true;
-        this.innerHTML = `
-      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      <span>Deleting...</span>
-    `;
-
+        this.innerHTML = `<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span>Deleting...</span>`;
         try {
           const response = await fetch(`/admin/employees/${employeeId}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
           });
-
           if (response.ok) {
             closeDeleteModal();
-            alert('Employee and all associated data deleted successfully');
+            alert('Employee deleted successfully');
             window.location.reload();
           } else {
             const error = await response.json();
             alert(error.message || 'Failed to delete employee');
             this.disabled = false;
-            this.innerHTML = `
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-          </svg>
-          <span>Delete Employee</span>
-        `;
+            this.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg><span>Delete Employee</span>`;
           }
         } catch (error) {
-          console.error('Delete error:', error);
           alert('An error occurred while deleting the employee');
           this.disabled = false;
-          this.innerHTML = `
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-        </svg>
-        <span>Delete Employee</span>
-      `;
+          this.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg><span>Delete Employee</span>`;
         }
       });
 
-      // ── Status modal ───────────────────────────────────────
       function toggleUserStatus(btn, name, userId) {
         const id = btn.dataset.id;
         const isActive = btn.dataset.active === 'true';
@@ -1935,6 +1958,7 @@
           closeStatusModal();
         };
       }
+
       function closeStatusModal() {
         const modal = document.getElementById('statusModal');
         const box = document.getElementById('statusModalContent');
@@ -1942,18 +1966,16 @@
         setTimeout(() => modal.classList.add('hidden'), 200);
       }
 
-      // ── Close modals on overlay click ──────────────────────
-      document.getElementById('editEmployeeModal').addEventListener('click', function (e) {
-        if (e.target === this) closeEditModal();
+      document.getElementById('editEmployeeModal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeEditModal();
       });
-      document.getElementById('deleteModal').addEventListener('click', function (e) {
-        if (e.target === this) closeDeleteModal();
+      document.getElementById('deleteModal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeDeleteModal();
       });
-      document.getElementById('statusModal').addEventListener('click', function (e) {
-        if (e.target === this) closeStatusModal();
+      document.getElementById('statusModal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeStatusModal();
       });
 
-      // ── Escape key closes any open modal ──────────────────
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           if (!document.getElementById('deleteModal').classList.contains('hidden'))
@@ -1972,31 +1994,21 @@
 
       async function registerPushNotifications() {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-
         try {
           await navigator.serviceWorker.register('/sw.js');
           const registration = await navigator.serviceWorker.ready;
-
           const permission = await Notification.requestPermission();
-          if (permission !== 'granted') {
-            console.warn('[SW] Notification permission denied');
-            return;
-          }
-
+          if (permission !== 'granted') return;
           const existingSub = await registration.pushManager.getSubscription();
           if (existingSub) {
-            console.log('[SW] Already subscribed, syncing...');
             await syncSubscription(existingSub);
             return;
           }
-
           const subscription = await registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
           });
-
           await syncSubscription(subscription);
-          console.log('[SW] Subscribed and saved successfully');
         } catch (err) {
           console.error('[SW] Push registration error:', err);
         }

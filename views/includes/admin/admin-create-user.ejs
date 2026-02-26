@@ -96,6 +96,7 @@
         background: none;
         border: none;
         cursor: pointer;
+        font-family: 'Sora', sans-serif;
       }
       .logout-btn:hover {
         background: rgba(244, 63, 94, 0.12);
@@ -199,7 +200,7 @@
         margin-top: 5px;
       }
 
-      /* UserId combined input — mirrors the original pr-36 suffix approach */
+      /* UserId combined input */
       .userid-outer {
         position: relative;
         display: flex;
@@ -226,7 +227,8 @@
       }
       .userid-input {
         flex: 1;
-        padding: 10px 12px 10px 36px;
+        min-width: 0;
+        padding: 10px 8px 10px 36px;
         border: none;
         outline: none;
         background: transparent;
@@ -247,6 +249,7 @@
         display: flex;
         align-items: center;
         font-family: 'JetBrains Mono', monospace;
+        flex-shrink: 0;
       }
 
       /* Role cards */
@@ -268,7 +271,6 @@
         border-color: var(--indigo);
         background: rgba(79, 70, 229, 0.04);
       }
-
       .role-icon {
         width: 38px;
         height: 38px;
@@ -335,11 +337,13 @@
         cursor: pointer;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 7px;
         transition:
           opacity 0.15s,
           box-shadow 0.15s;
         box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+        white-space: nowrap;
       }
       .btn-primary:hover {
         opacity: 0.9;
@@ -349,7 +353,6 @@
         opacity: 0.65;
         cursor: not-allowed;
       }
-
       .btn-ghost {
         padding: 10px 18px;
         background: none;
@@ -364,6 +367,8 @@
         transition: all 0.15s;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
+        white-space: nowrap;
       }
       .btn-ghost:hover {
         background: #f8fafc;
@@ -381,6 +386,128 @@
       .animate-spin {
         animation: spin 1s linear infinite;
       }
+
+      /* ── Role grid ───────────────────────────── */
+      #roleGrid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      /* ── Form actions row ────────────────────── */
+      .form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 16px;
+        border-top: 1px solid #f1f5f9;
+      }
+
+      /* ── Mobile responsiveness ───────────────── */
+      @media (max-width: 768px) {
+        /* Main padding tighter */
+        main {
+          padding: 12px !important;
+        }
+
+        /* Form card header */
+        .form-card-header {
+          padding: 14px 16px;
+        }
+
+        /* Form body padding */
+        #createUserForm {
+          padding: 16px !important;
+        }
+
+        /* Field label slightly smaller */
+        .field-label {
+          font-size: 0.65rem;
+          margin-bottom: 5px;
+        }
+
+        /* Inputs smaller */
+        .field-input {
+          padding: 9px 10px 9px 34px;
+          font-size: 0.82rem;
+        }
+
+        .field-hint {
+          font-size: 0.68rem;
+        }
+
+        /* UserId: hide full domain, show short version */
+        .userid-suffix .suffix-full {
+          display: none;
+        }
+        .userid-suffix .suffix-short {
+          display: inline;
+        }
+
+        .userid-suffix {
+          font-size: 0.7rem;
+          padding: 8px 10px;
+        }
+
+        .userid-input {
+          font-size: 0.82rem;
+          padding: 9px 8px 9px 34px;
+        }
+
+        /* Role cards — single column */
+        #roleGrid {
+          grid-template-columns: 1fr;
+        }
+
+        .role-card {
+          padding: 12px 14px;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .role-icon {
+          width: 34px;
+          height: 34px;
+          flex-shrink: 0;
+        }
+
+        .role-icon svg {
+          width: 16px !important;
+          height: 16px !important;
+        }
+
+        .role-card p:first-child {
+          font-size: 0.85rem;
+        }
+
+        .role-card p:last-child {
+          font-size: 0.7rem;
+        }
+
+        /* Buttons: full width stacked */
+        .form-actions {
+          flex-direction: column-reverse;
+          align-items: stretch;
+        }
+
+        .btn-primary,
+        .btn-ghost {
+          width: 100%;
+          padding: 12px 16px;
+          font-size: 0.88rem;
+        }
+
+        /* Page title */
+        .page-title {
+          font-size: 1.3rem !important;
+        }
+
+        /* Reduce spacing between form fields */
+        #createUserForm > * + * {
+          margin-top: 14px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -395,7 +522,11 @@
       <aside
         id="sidebar"
         class="mobile-menu fixed lg:static inset-y-0 left-0 z-50 w-64 flex flex-col lg:transform-none"
-        style="min-width: 240px"
+        style="
+          min-width: 240px;
+          background: var(--sidebar-bg);
+          border-right: 1px solid var(--sidebar-border);
+        "
       >
         <button
           id="closeSidebar"
@@ -439,7 +570,6 @@
           >
             Navigation
           </p>
-
           <a href="/admin/dashboard" class="nav-link">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -478,7 +608,6 @@
 
         <!-- Logout -->
         <div class="p-4 border-t" style="border-color: var(--sidebar-border)">
-          <!-- Company Logo -->
           <div class="mb-4 px-1">
             <img
               src="/images/Full_logo_image.png"
@@ -498,7 +627,6 @@
               onmouseout="this.style.opacity = '0.85'"
             />
           </div>
-
           <form action="/logout" method="GET">
             <button type="submit" class="logout-btn">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -535,7 +663,6 @@
                     />
                   </svg>
                 </button>
-
                 <!-- Breadcrumb -->
                 <nav class="flex items-center gap-2">
                   <a href="/admin/dashboard" class="breadcrumb-link">
@@ -556,7 +683,6 @@
                   <span class="text-xs font-bold text-slate-900">Create User</span>
                 </nav>
               </div>
-
               <!-- Avatar -->
               <div class="flex-shrink-0">
                 <div
@@ -575,7 +701,7 @@
           <div class="max-w-2xl mx-auto">
             <!-- Page title -->
             <div class="mb-6">
-              <h1 class="text-2xl font-bold text-slate-900">Create New User</h1>
+              <h1 class="page-title text-2xl font-bold text-slate-900">Create New User</h1>
               <p class="text-sm text-slate-400 mt-1">Add a new user to the system</p>
             </div>
 
@@ -723,7 +849,10 @@
                       class="userid-input"
                       oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')"
                     />
-                    <span class="userid-suffix">@conspicuous.com</span>
+                    <span class="userid-suffix">
+                      <span class="suffix-full">@conspicuous.com</span>
+                      <span class="suffix-short" style="display: none">@conspic…</span>
+                    </span>
                   </div>
                   <p class="field-hint">
                     Enter the ID prefix — it will be saved as
@@ -817,7 +946,7 @@
                   <label class="field-label"
                     >User Role <span style="color: var(--rose)">*</span></label
                   >
-                  <div class="grid grid-cols-2 gap-3">
+                  <div id="roleGrid">
                     <label class="role-card">
                       <input type="radio" name="role" value="employee" checked class="hidden" />
                       <div class="role-icon emp">
@@ -861,7 +990,7 @@
                 </div>
 
                 <!-- Form Actions -->
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                <div class="form-actions">
                   <a href="/admin/dashboard" class="btn-ghost">Cancel</a>
                   <button type="submit" id="submitBtn" class="btn-primary">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -906,7 +1035,6 @@
       function togglePassword() {
         const passwordInput = document.getElementById('password');
         const eyeIcon = document.getElementById('eyeIcon');
-
         if (passwordInput.type === 'password') {
           passwordInput.type = 'text';
           eyeIcon.innerHTML =
@@ -923,7 +1051,7 @@
         document.getElementById(alertId).classList.add('hidden');
       }
 
-      // Utility function to add delay
+      // Utility delay
       function delay(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms));
       }
@@ -935,17 +1063,15 @@
         const submitBtn = document.getElementById('submitBtn');
         const originalBtnContent = submitBtn.innerHTML;
 
-        // Show loading state
         submitBtn.disabled = true;
         submitBtn.innerHTML = `
-      <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      <span>Creating...</span>
-    `;
+          <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Creating...</span>
+        `;
 
-        // Get form data — userId sent as-is; the schema's pre-save hook handles uppercasing + suffix
         const formData = {
           name: document.getElementById('name').value,
           userId: document.getElementById('userId').value,
