@@ -728,23 +728,27 @@
         margin-top: 4px;
         font-weight: 500;
       }
-      /* ── Mobile sidebar scroll fix ───────────────── */
+      /* ── Mobile sidebar scroll ───────────────── */
       @media (max-width: 1023px) {
         aside {
-          overflow-y: auto !important;
-          overflow-x: hidden;
+          overflow: hidden !important;
+          display: flex;
+          flex-direction: column;
         }
 
         aside nav {
           flex: 1;
-          overflow-y: visible; /* let the aside handle scrolling */
+          overflow-y: auto;
           overflow-x: hidden;
+          min-height: 0;
         }
 
         .sidebar-bottom-section {
-          position: static;
+          flex-shrink: 0;
+          position: relative;
           background: var(--sidebar-bg);
           border-top: 1px solid var(--sidebar-border);
+          z-index: 2;
         }
       }
       /* ── Bottom breathing room on mobile ─────────── */
