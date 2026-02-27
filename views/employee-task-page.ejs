@@ -602,6 +602,40 @@
         background: rgba(79, 70, 229, 0.02);
       }
 
+      /* ── NEW: Task remove button ─────────────── */
+      .task-remove-cell {
+        width: 44px;
+        text-align: center;
+        vertical-align: middle;
+      }
+      .task-remove-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: 1.5px solid #fecdd3;
+        color: #f43f5e;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        flex-shrink: 0;
+      }
+      .task-remove-btn:hover {
+        background: rgba(244, 63, 94, 0.1);
+        border-color: #f43f5e;
+        transform: scale(1.05);
+      }
+      .task-remove-btn:active {
+        transform: scale(0.95);
+      }
+      /* Dim remove btn when only one row remains */
+      #taskTable tr:only-child .task-remove-btn {
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
       .sub-card {
         background: #f8fafc;
         border: 1.5px solid #e2e8f0;
@@ -728,6 +762,7 @@
         margin-top: 4px;
         font-weight: 500;
       }
+
       /* ── Mobile sidebar scroll ───────────────── */
       @media (max-width: 1023px) {
         aside {
@@ -756,10 +791,219 @@
           border-top: 1px solid var(--sidebar-border);
         }
       }
+
       /* ── Bottom breathing room on mobile ─────────── */
       @media (max-width: 1023px) {
         .content-scroll > div {
           padding-bottom: 5rem !important; /* 80px space at bottom */
+        }
+      }
+
+      /* ════════════════════════════════════════════
+         NEW: Mobile form experience — ≤ 767px only
+         Does NOT affect desktop at all
+      ════════════════════════════════════════════ */
+      @media (max-width: 767px) {
+        /* ── Content padding: tighter ─────────── */
+        .content-scroll > div {
+          padding: 12px !important;
+          padding-bottom: 5rem !important;
+        }
+
+        /* ── Form card ────────────────────────── */
+        .form-card {
+          border-radius: 16px;
+        }
+
+        /* ── Form card header: compact ─────────── */
+        .form-card-header {
+          padding: 14px 16px;
+        }
+
+        /* ── Form body: tight spacing ───────────── */
+        .form-card .space-y-8 > * + * {
+          margin-top: 20px !important;
+        }
+
+        /* ── Section titles ───────────────────── */
+        .section-title {
+          font-size: 0.62rem;
+          margin-bottom: 10px;
+        }
+
+        /* ── Field labels ───────────────────────── */
+        .field-label {
+          font-size: 0.62rem;
+          margin-bottom: 4px;
+        }
+
+        /* ── Inputs: bigger tap targets ─────────── */
+        .field-input,
+        .field-select,
+        .field-textarea {
+          padding: 11px 12px;
+          font-size: 0.9rem;
+          -webkit-appearance: none;
+          appearance: none;
+        }
+
+        /* ── Employee info: stack all 3 fields ─── */
+        .grid.grid-cols-1.md\\:grid-cols-3 {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 10px !important;
+        }
+
+        /* ── Tasks: card-based layout on mobile ── */
+        .task-table-wrap {
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .task-table-wrap thead {
+          display: none;
+        }
+        .task-table-wrap table,
+        .task-table-wrap tbody,
+        .task-table-wrap tr {
+          display: block;
+          width: 100%;
+        }
+        .task-table-wrap tbody tr {
+          padding: 12px;
+          border-bottom: 1px solid #f1f5f9;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          position: relative;
+        }
+        .task-table-wrap tbody tr:last-child {
+          border-bottom: none;
+        }
+        .task-table-wrap tbody td {
+          padding: 0;
+          border: none !important;
+          display: block;
+          width: 100%;
+        }
+        /* Mini labels above each field */
+        .task-table-wrap tbody td:nth-child(1)::before {
+          content: 'TASK NAME';
+          display: block;
+          font-size: 0.58rem;
+          font-weight: 700;
+          color: #94a3b8;
+          letter-spacing: 0.08em;
+          margin-bottom: 4px;
+        }
+        .task-table-wrap tbody td:nth-child(2)::before {
+          content: 'DESCRIPTION';
+          display: block;
+          font-size: 0.58rem;
+          font-weight: 700;
+          color: #94a3b8;
+          letter-spacing: 0.08em;
+          margin-bottom: 4px;
+        }
+        .task-table-wrap tbody td:nth-child(3)::before {
+          content: 'STATUS';
+          display: block;
+          font-size: 0.58rem;
+          font-weight: 700;
+          color: #94a3b8;
+          letter-spacing: 0.08em;
+          margin-bottom: 4px;
+        }
+        .task-table-wrap tbody td:nth-child(3) select {
+          width: 100% !important;
+        }
+
+        /* ── Remove cell on mobile ───────────── */
+        .task-table-wrap tbody td.task-remove-cell {
+          display: flex !important;
+          justify-content: flex-end;
+          padding-top: 4px !important;
+        }
+        .task-table-wrap tbody td.task-remove-cell::before {
+          display: none !important;
+        }
+        .task-remove-btn {
+          width: 34px;
+          height: 34px;
+          border-radius: 9px;
+        }
+
+        /* ── Add Task button: full width ──────── */
+        .btn-add-task {
+          width: 100%;
+          justify-content: center;
+          padding: 11px 18px;
+          font-size: 0.85rem;
+        }
+        .flex.items-center.justify-between.mb-4 {
+          flex-direction: column;
+          align-items: flex-start !important;
+          gap: 10px;
+        }
+        .flex.items-center.justify-between.mb-4 .btn-add-task {
+          align-self: stretch;
+        }
+
+        /* ── Sub-card spacing ─────────────────── */
+        .sub-card {
+          padding: 14px;
+          border-radius: 12px;
+        }
+        .sub-card.space-y-4 > * + * {
+          margin-top: 12px !important;
+        }
+
+        /* ── Leave/attendance: collapse 2-col grids */
+        .sub-card .grid.grid-cols-2 {
+          grid-template-columns: 1fr !important;
+          gap: 10px !important;
+        }
+
+        /* ── Half-day cards ───────────────────── */
+        .half-day-card {
+          padding: 12px;
+        }
+
+        /* ── Add Leave / Add Entry: full width ─── */
+        .btn-add {
+          width: 100%;
+          justify-content: center;
+          padding: 11px 16px;
+          font-size: 0.82rem;
+        }
+
+        /* ── Submit: full width, prominent ──────── */
+        .flex.justify-end.pt-4.border-t {
+          padding-top: 16px;
+        }
+        .btn-primary {
+          width: 100%;
+          justify-content: center;
+          padding: 14px 22px;
+          font-size: 0.95rem;
+          border-radius: 12px;
+          box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
+        }
+
+        /* ── Topbar: compact ──────────────────── */
+        .topbar {
+          padding-top: 10px !important;
+          padding-bottom: 10px !important;
+        }
+
+        /* ── Textarea ─────────────────────────── */
+        .field-textarea {
+          min-height: 80px;
+        }
+
+        /* ── Week range text ──────────────────── */
+        #weekRangeText {
+          font-size: 0.75rem;
+          margin-top: 5px;
         }
       }
     </style>
@@ -1055,6 +1299,7 @@
                             <th>Task</th>
                             <th>Description</th>
                             <th style="width: 160px">Status</th>
+                            <th style="width: 44px"></th>
                           </tr>
                         </thead>
                         <tbody id="taskTable">
@@ -1082,6 +1327,29 @@
                                 <option value="in-progress">In Progress</option>
                                 <option value="completed">Completed</option>
                               </select>
+                            </td>
+                            <td class="task-remove-cell">
+                              <button
+                                type="button"
+                                class="task-remove-btn"
+                                onclick="removeTaskRow(this)"
+                                title="Remove task"
+                              >
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2.5"
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
+                                </svg>
+                              </button>
                             </td>
                           </tr>
                         </tbody>
@@ -1342,6 +1610,17 @@
           if (window.innerWidth < 1024) closeMobileSidebar();
         });
       });
+
+      // ── NEW: Task row remove ─────────────────────────
+      function removeTaskRow(btn) {
+        const tbody = document.getElementById('taskTable');
+        if (tbody.rows.length <= 1) return; // always keep at least one row
+        const tr = btn.closest('tr');
+        tr.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+        tr.style.opacity = '0';
+        tr.style.transform = 'translateX(8px)';
+        setTimeout(() => tr.remove(), 180);
+      }
     </script>
 
     <script src="/employee-task-page.js"></script>

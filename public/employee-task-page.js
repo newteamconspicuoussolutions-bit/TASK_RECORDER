@@ -2,36 +2,47 @@
 function addTaskRow() {
   const table = document.getElementById('taskTable');
   const row = document.createElement('tr');
-  row.className = 'table-row';
 
   row.innerHTML = `
-    <td class="px-4 py-3">
+    <td>
       <input 
         name="task[]"
         placeholder="Enter task name"
         required
-        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+        class="field-input"
       />
     </td>
-    <td class="px-4 py-3">
+    <td>
       <input 
         name="description[]"
         placeholder="Task description"
         required
-        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+        class="field-input"
       />
     </td>
-    <td class="px-4 py-3">
+    <td>
       <select
         name="status[]"
         required
-        class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm bg-white"
+        class="field-select"
       >
         <option value="">Select Status</option>
-        <option value="pending">pending</option>
-        <option value="in-progress">in-progress</option>
-        <option value="completed">completed</option>
+        <option value="pending">Pending</option>
+        <option value="in-progress">In Progress</option>
+        <option value="completed">Completed</option>
       </select>
+    </td>
+    <td class="task-remove-cell">
+      <button
+        type="button"
+        class="task-remove-btn"
+        onclick="removeTaskRow(this)"
+        title="Remove task"
+      >
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
     </td>
   `;
 
