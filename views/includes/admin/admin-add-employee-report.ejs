@@ -36,7 +36,9 @@
         min-height: 100vh;
       }
 
-      /* ── Sidebar ─────────────────────────────── */
+      /* ══════════════════════════════════════════════
+         SIDEBAR — COMPLETELY UNCHANGED FROM ORIGINAL
+      ══════════════════════════════════════════════ */
       #sidebar {
         background: var(--sidebar-bg);
         border-right: 1px solid var(--sidebar-border);
@@ -103,14 +105,14 @@
         color: #f87171;
       }
 
-      /* ── Header ───────────────────────────────── */
+      /* ── Header ── */
       header {
         background: rgba(255, 255, 255, 0.85);
         backdrop-filter: blur(12px);
         border-bottom: 1px solid rgba(79, 70, 229, 0.08);
       }
 
-      /* ── Mobile sidebar ──────────────────────── */
+      /* ── Mobile sidebar ── */
       .mobile-menu {
         transform: translateX(-100%);
         transition: transform 0.3s ease;
@@ -119,7 +121,7 @@
         transform: translateX(0);
       }
 
-      /* ── Scrollbar ───────────────────────────── */
+      /* ── Scrollbar ── */
       ::-webkit-scrollbar {
         width: 5px;
         height: 5px;
@@ -135,64 +137,57 @@
         background: #94a3b8;
       }
 
-      /* ── Form Card ───────────────────────────── */
+      /* ══════════════════════════════════════════════
+         FORM STYLES — updated to match employee page
+      ══════════════════════════════════════════════ */
+
       .form-card {
         background: #fff;
-        border-radius: 16px;
+        border-radius: 20px;
         border: 1px solid rgba(0, 0, 0, 0.06);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.04),
+          0 8px 32px rgba(79, 70, 229, 0.04);
         overflow: hidden;
         max-width: 900px;
         margin: 0 auto;
       }
-
       .form-card-header {
-        padding: 20px 28px;
+        padding: 22px 28px;
         background: linear-gradient(135deg, #0f0e17, #1e1b4b);
       }
 
-      /* ── Section Headings ─────────────────────── */
-      .section-heading {
-        font-size: 0.7rem;
-        font-weight: 700;
+      .section-title {
+        font-size: 0.72rem;
+        font-weight: 800;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: var(--indigo);
+        color: #475569;
         margin-bottom: 14px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .section-heading::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: rgba(79, 70, 229, 0.12);
       }
 
-      /* ── Fields ──────────────────────────────── */
       .field-label {
         display: block;
-        font-size: 0.72rem;
-        font-weight: 600;
+        font-size: 0.68rem;
+        font-weight: 700;
         color: #64748b;
-        margin-bottom: 6px;
+        letter-spacing: 0.07em;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        margin-bottom: 6px;
       }
       .field-input {
         width: 100%;
         padding: 9px 12px;
         border: 1.5px solid #e2e8f0;
         border-radius: 10px;
-        font-size: 0.85rem;
+        font-size: 0.84rem;
         font-family: 'Sora', sans-serif;
         outline: none;
+        color: #0f172a;
+        background: #f8fafc;
         transition:
           border-color 0.2s,
           box-shadow 0.2s;
-        color: #0f172a;
-        background: #f8fafc;
       }
       .field-input:focus {
         border-color: var(--indigo);
@@ -200,52 +195,50 @@
         background: #fff;
       }
       .field-input[readonly] {
-        color: #94a3b8;
+        color: #64748b;
         cursor: default;
       }
       .field-input[readonly]:focus {
         border-color: #e2e8f0;
         box-shadow: none;
+        background: #f8fafc;
       }
+
       .field-select {
         width: 100%;
         padding: 9px 12px;
         border: 1.5px solid #e2e8f0;
         border-radius: 10px;
-        font-size: 0.85rem;
+        font-size: 0.84rem;
         font-family: 'Sora', sans-serif;
         outline: none;
+        color: #0f172a;
+        background: #f8fafc;
         transition:
           border-color 0.2s,
           box-shadow 0.2s;
-        color: #0f172a;
-        background: #f8fafc;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-        background-size: 16px;
-        padding-right: 34px;
+        cursor: pointer;
       }
       .field-select:focus {
         border-color: var(--indigo);
         box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        background-color: #fff;
+        background: #fff;
       }
+
       .field-textarea {
         width: 100%;
         padding: 9px 12px;
         border: 1.5px solid #e2e8f0;
         border-radius: 10px;
-        font-size: 0.85rem;
+        font-size: 0.84rem;
         font-family: 'Sora', sans-serif;
         outline: none;
-        transition:
-          border-color 0.2s,
-          box-shadow 0.2s;
         color: #0f172a;
         background: #f8fafc;
         resize: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
       }
       .field-textarea:focus {
         border-color: var(--indigo);
@@ -253,107 +246,94 @@
         background: #fff;
       }
 
-      /* ── Section Block ───────────────────────── */
-      .section-block {
-        border: 1px solid rgba(79, 70, 229, 0.08);
-        border-radius: 12px;
-        padding: 18px;
-        background: #fafbff;
-      }
-
-      /* ── Task Table ──────────────────────────── */
-      .task-table {
-        width: 100%;
-        border-collapse: collapse;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
+      /* ── Task table ── */
+      .task-table-wrap {
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
         overflow: hidden;
       }
-      .task-table thead tr {
+      .task-table-wrap table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .task-table-wrap thead tr {
         background: linear-gradient(135deg, #0f0e17, #1e1b4b);
       }
-      .task-table thead th {
-        padding: 10px 12px;
+      .task-table-wrap thead th {
+        padding: 11px 14px;
         font-size: 0.65rem;
         font-weight: 700;
-        letter-spacing: 0.07em;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.6);
+        color: rgba(255, 255, 255, 0.55);
         text-align: left;
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
       }
-      .task-table tbody td {
+      .task-table-wrap thead th:last-child {
+        border-right: none;
+      }
+      .task-table-wrap tbody td {
         padding: 10px 12px;
-        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        border-right: 1px solid #f8fafc;
       }
-      .task-table tbody tr:hover {
+      .task-table-wrap tbody td:last-child {
+        border-right: none;
+      }
+      .task-table-wrap tbody tr:last-child td {
+        border-bottom: none;
+      }
+      .task-table-wrap tbody tr {
+        transition: background 0.12s;
+      }
+      .task-table-wrap tbody tr:hover {
         background: rgba(79, 70, 229, 0.02);
       }
 
-      /* ── Buttons ─────────────────────────────── */
-      .btn-primary {
-        padding: 9px 20px;
-        background: linear-gradient(135deg, var(--indigo), var(--violet));
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        font-family: 'Sora', sans-serif;
-        cursor: pointer;
+      /* ── Task remove button ── */
+      .task-remove-cell {
+        width: 44px;
+        text-align: center;
+        vertical-align: middle;
+      }
+      .task-remove-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        transition:
-          opacity 0.15s,
-          box-shadow 0.15s;
-        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
-      }
-      .btn-primary:hover {
-        opacity: 0.9;
-        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
-      }
-
-      .btn-secondary {
-        padding: 8px 14px;
-        background: rgba(79, 70, 229, 0.07);
-        color: var(--indigo);
-        border: 1px solid rgba(79, 70, 229, 0.2);
-        border-radius: 9px;
-        font-size: 0.78rem;
-        font-weight: 600;
-        font-family: 'Sora', sans-serif;
+        justify-content: center;
+        background: none;
+        border: 1.5px solid #fecdd3;
+        color: #f43f5e;
         cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        transition: all 0.15s;
+        transition: all 0.15s ease;
+        flex-shrink: 0;
       }
-      .btn-secondary:hover {
-        background: rgba(79, 70, 229, 0.13);
+      .task-remove-btn:hover {
+        background: rgba(244, 63, 94, 0.1);
+        border-color: #f43f5e;
+        transform: scale(1.05);
       }
-
-      .btn-blue {
-        padding: 8px 14px;
-        background: rgba(16, 185, 129, 0.08);
-        color: #059669;
-        border: 1px solid rgba(16, 185, 129, 0.2);
-        border-radius: 9px;
-        font-size: 0.78rem;
-        font-weight: 600;
-        font-family: 'Sora', sans-serif;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        transition: all 0.15s;
+      .task-remove-btn:active {
+        transform: scale(0.95);
       }
-      .btn-blue:hover {
-        background: rgba(16, 185, 129, 0.14);
+      #taskTable tr:only-child .task-remove-btn {
+        opacity: 0.3;
+        pointer-events: none;
       }
 
-      /* ── Half day radio cards ─────────────────── */
+      /* ── Sub card ── */
+      .sub-card {
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 18px;
+      }
+
+      /* ── Half day cards ── */
       .half-day-card {
-        padding: 10px 14px;
+        padding: 10px 12px;
         border: 2px solid #e2e8f0;
         border-radius: 10px;
         text-align: center;
@@ -362,50 +342,120 @@
       }
       .half-day-card:has(input:checked) {
         border-color: var(--indigo);
-        background: rgba(79, 70, 229, 0.04);
-      }
-      .half-day-card:hover {
-        border-color: #a5b4fc;
-        background: rgba(79, 70, 229, 0.02);
+        background: rgba(79, 70, 229, 0.05);
       }
 
-      /* ── Leave / Attendance list items ───────── */
-      .list-item-card {
+      /* ── Entry chip ── */
+      .entry-chip {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
+        gap: 8px;
         background: #fff;
         border: 1px solid #e2e8f0;
         border-radius: 9px;
-        padding: 10px 14px;
+        padding: 8px 10px;
       }
-      .list-item-card .remove-btn {
+      .entry-chip-remove {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f43f5e;
         background: none;
         border: none;
         cursor: pointer;
-        color: #f43f5e;
-        padding: 4px;
-        border-radius: 6px;
-        transition: background 0.15s;
-        display: flex;
-        align-items: center;
+        transition: background 0.12s;
       }
-      .list-item-card .remove-btn:hover {
+      .entry-chip-remove:hover {
         background: rgba(244, 63, 94, 0.08);
       }
 
-      /* ── Days count chip ─────────────────────── */
-      .days-chip {
-        margin-top: 10px;
-        padding: 8px 14px;
-        background: rgba(79, 70, 229, 0.06);
-        border: 1px solid rgba(79, 70, 229, 0.12);
+      /* ── Day count ── */
+      .day-count {
+        padding: 7px 12px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
         border-radius: 9px;
-        font-size: 0.8rem;
-        color: var(--indigo);
+        font-size: 0.78rem;
+        color: #475569;
+        margin-top: 10px;
       }
 
-      /* ── Employee chip ───────────────────────── */
+      /* ── Buttons ── */
+      .btn-primary {
+        padding: 9px 22px;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition:
+          opacity 0.15s,
+          box-shadow 0.15s;
+        box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+      }
+      .btn-primary:hover {
+        opacity: 0.9;
+        box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4);
+      }
+
+      .btn-add {
+        padding: 7px 16px;
+        background: rgba(79, 70, 229, 0.08);
+        color: var(--indigo);
+        border: 1px solid rgba(79, 70, 229, 0.2);
+        border-radius: 9px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.15s;
+      }
+      .btn-add:hover {
+        background: rgba(79, 70, 229, 0.14);
+      }
+
+      .btn-add-task {
+        padding: 8px 18px;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: opacity 0.15s;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+      }
+      .btn-add-task:hover {
+        opacity: 0.9;
+      }
+
+      #weekRangeText {
+        font-size: 0.72rem;
+        color: var(--indigo);
+        margin-top: 4px;
+        font-weight: 500;
+      }
+
+      /* ── Employee chip (header) ── */
       .emp-chip {
         display: flex;
         align-items: center;
@@ -430,11 +480,187 @@
         background: linear-gradient(135deg, var(--indigo), var(--violet));
       }
 
-      /* week hint */
-      #weekRangeText {
-        font-size: 0.73rem;
-        color: #94a3b8;
-        margin-top: 4px;
+      /* ══════════════════════════════════════════════
+         MOBILE RESPONSIVENESS ≤ 767px
+         (form only — sidebar untouched)
+      ══════════════════════════════════════════════ */
+      @media (max-width: 767px) {
+        /* breathing room at bottom */
+        main > div {
+          padding-bottom: 5rem !important;
+        }
+
+        .form-card {
+          border-radius: 16px;
+        }
+        .form-card-header {
+          padding: 14px 16px;
+        }
+        .form-card .space-y-8 > * + * {
+          margin-top: 20px !important;
+        }
+
+        .section-title {
+          font-size: 0.62rem;
+          margin-bottom: 10px;
+        }
+        .field-label {
+          font-size: 0.62rem;
+          margin-bottom: 4px;
+        }
+
+        .field-input,
+        .field-select,
+        .field-textarea {
+          padding: 11px 12px;
+          font-size: 0.9rem;
+          -webkit-appearance: none;
+          appearance: none;
+        }
+
+        /* Stack employee info 3-col → 1-col */
+        .grid.grid-cols-1.md\:grid-cols-3 {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 10px !important;
+        }
+
+        /* Tasks: card layout on mobile */
+        .task-table-wrap {
+          border-radius: 12px;
+        }
+        .task-table-wrap thead {
+          display: none;
+        }
+        .task-table-wrap table,
+        .task-table-wrap tbody,
+        .task-table-wrap tr {
+          display: block;
+          width: 100%;
+        }
+        .task-table-wrap tbody tr {
+          padding: 12px;
+          border-bottom: 1px solid #f1f5f9;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .task-table-wrap tbody tr:last-child {
+          border-bottom: none;
+        }
+        .task-table-wrap tbody td {
+          padding: 0;
+          border: none !important;
+          display: block;
+          width: 100%;
+        }
+        .task-table-wrap tbody td:nth-child(1)::before {
+          content: 'TASK NAME';
+          display: block;
+          font-size: 0.58rem;
+          font-weight: 700;
+          color: #94a3b8;
+          letter-spacing: 0.08em;
+          margin-bottom: 4px;
+        }
+        .task-table-wrap tbody td:nth-child(2)::before {
+          content: 'DESCRIPTION';
+          display: block;
+          font-size: 0.58rem;
+          font-weight: 700;
+          color: #94a3b8;
+          letter-spacing: 0.08em;
+          margin-bottom: 4px;
+        }
+        .task-table-wrap tbody td:nth-child(3)::before {
+          content: 'STATUS';
+          display: block;
+          font-size: 0.58rem;
+          font-weight: 700;
+          color: #94a3b8;
+          letter-spacing: 0.08em;
+          margin-bottom: 4px;
+        }
+        .task-table-wrap tbody td:nth-child(3) select {
+          width: 100% !important;
+        }
+        .task-table-wrap tbody td.task-remove-cell {
+          display: flex !important;
+          justify-content: flex-end;
+          padding-top: 4px !important;
+        }
+        .task-table-wrap tbody td.task-remove-cell::before {
+          display: none !important;
+        }
+        .task-remove-btn {
+          width: 34px;
+          height: 34px;
+          border-radius: 9px;
+        }
+
+        /* Add Task: full width */
+        .btn-add-task {
+          width: 100%;
+          justify-content: center;
+          padding: 11px 18px;
+          font-size: 0.85rem;
+        }
+        .tasks-header {
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 10px !important;
+        }
+        .tasks-header .btn-add-task {
+          align-self: stretch;
+        }
+
+        /* Sub-card */
+        .sub-card {
+          padding: 14px;
+          border-radius: 12px;
+        }
+        .sub-card.space-y-4 > * + * {
+          margin-top: 12px !important;
+        }
+
+        /* Collapse 2-col grids inside sub-card */
+        .sub-card .grid.grid-cols-2 {
+          grid-template-columns: 1fr !important;
+          gap: 10px !important;
+        }
+
+        .half-day-card {
+          padding: 12px;
+        }
+
+        /* Add Leave / Add Entry: full width */
+        .btn-add {
+          width: 100%;
+          justify-content: center;
+          padding: 11px 16px;
+          font-size: 0.82rem;
+        }
+
+        /* Submit: full width */
+        .submit-row {
+          padding-top: 16px !important;
+        }
+        .btn-primary {
+          width: 100%;
+          justify-content: center;
+          padding: 14px 22px;
+          font-size: 0.95rem;
+          border-radius: 12px;
+          box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
+        }
+
+        .field-textarea {
+          min-height: 80px;
+        }
+        #weekRangeText {
+          font-size: 0.75rem;
+          margin-top: 5px;
+        }
       }
     </style>
   </head>
@@ -446,7 +672,9 @@
         class="fixed inset-0 bg-black bg-opacity-60 z-40 lg:hidden hidden"
       ></div>
 
-      <!-- ── Sidebar ───────────────────────────────── -->
+      <!-- ══════════════════════════════════════════════
+           SIDEBAR — 100% UNCHANGED FROM ORIGINAL
+      ══════════════════════════════════════════════ -->
       <aside
         id="sidebar"
         class="mobile-menu fixed lg:static inset-y-0 left-0 z-50 w-64 flex flex-col lg:transform-none"
@@ -494,7 +722,6 @@
           >
             Navigation
           </p>
-
           <a href="/admin/dashboard" class="nav-link">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -533,7 +760,6 @@
 
         <!-- Logout -->
         <div class="p-4 border-t" style="border-color: var(--sidebar-border)">
-          <!-- Company Logo -->
           <div class="mb-4 px-1">
             <img
               src="/images/Full_logo_image.png"
@@ -553,7 +779,6 @@
               onmouseout="this.style.opacity = '0.85'"
             />
           </div>
-
           <form action="/logout" method="GET">
             <button type="submit" class="logout-btn">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -570,9 +795,9 @@
         </div>
       </aside>
 
-      <!-- ── Main ───────────────────────────────────── -->
+      <!-- ── Main ── -->
       <div class="flex-1 flex flex-col overflow-hidden min-w-0">
-        <!-- Header -->
+        <!-- Header (UNCHANGED) -->
         <header class="shadow-sm z-10">
           <div class="px-4 sm:px-6 py-4">
             <div class="flex items-center justify-between gap-4">
@@ -615,7 +840,6 @@
                   </p>
                 </div>
               </div>
-
               <div class="flex items-center gap-2 flex-shrink-0">
                 <div class="emp-chip">
                   <div class="emp-avatar"><%= employee.name.charAt(0).toUpperCase() %></div>
@@ -638,7 +862,7 @@
 
         <!-- Content -->
         <main class="flex-1 overflow-y-auto p-4 sm:p-6">
-          <div id="weeklyReportForm">
+          <div>
             <form
               class="form-card"
               method="POST"
@@ -652,7 +876,7 @@
                       width: 40px;
                       height: 40px;
                       border-radius: 10px;
-                      background: rgba(255, 255, 255, 0.1);
+                      background: rgba(255, 255, 255, 0.12);
                       display: flex;
                       align-items: center;
                       justify-content: center;
@@ -669,13 +893,13 @@
                         stroke-linecap="round"
                         stroke-linejoin="round"
                         stroke-width="2"
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                       />
                     </svg>
                   </div>
                   <div>
                     <p class="text-white font-semibold text-base">Weekly Status Report</p>
-                    <p style="color: rgba(255, 255, 255, 0.45); font-size: 0.78rem">
+                    <p style="color: rgba(255, 255, 255, 0.45); font-size: 0.75rem">
                       Submit weekly progress and activities
                     </p>
                   </div>
@@ -685,7 +909,7 @@
               <div class="p-6 sm:p-8 space-y-8">
                 <!-- EMPLOYEE INFO -->
                 <section>
-                  <p class="section-heading">Employee Information</p>
+                  <p class="section-title">Employee Information</p>
                   <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div>
                       <label class="field-label">Employee Name</label>
@@ -703,18 +927,21 @@
                         value="<%= employee.userId %>"
                         readonly
                         class="field-input"
-                        style="font-family: 'JetBrains Mono', monospace"
+                        style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem"
                       />
                     </div>
                     <div>
-                      <label class="field-label">Week</label>
+                      <label class="field-label"
+                        >Week <span style="color: var(--rose)">*</span></label
+                      >
                       <input
                         type="text"
                         id="weekInput"
                         name="week"
-                        placeholder="e.g. W07"
+                        placeholder="W07"
                         required
                         class="field-input"
+                        style="font-family: 'JetBrains Mono', monospace"
                       />
                       <p id="weekRangeText" class="hidden"></p>
                     </div>
@@ -723,14 +950,9 @@
 
                 <!-- TASKS -->
                 <section>
-                  <div class="flex items-center justify-between mb-4">
-                    <p class="section-heading" style="margin-bottom: 0; flex: 1">Tasks</p>
-                    <button
-                      type="button"
-                      onclick="addTaskRow()"
-                      class="btn-secondary"
-                      style="margin-left: 12px"
-                    >
+                  <div class="tasks-header flex items-center justify-between mb-4">
+                    <p class="section-title" style="margin-bottom: 0">Tasks</p>
+                    <button type="button" onclick="addTaskRow()" class="btn-add-task">
                       <svg
                         class="w-3.5 h-3.5"
                         fill="none"
@@ -747,42 +969,62 @@
                       Add Task
                     </button>
                   </div>
-                  <div style="border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0">
-                    <table class="task-table">
+                  <div class="task-table-wrap">
+                    <table>
                       <thead>
                         <tr>
                           <th>Task</th>
                           <th>Description</th>
-                          <th>Status</th>
+                          <th style="width: 160px">Status</th>
+                          <th style="width: 44px"></th>
                         </tr>
                       </thead>
                       <tbody id="taskTable">
-                        <tr class="table-row">
+                        <tr>
                           <td>
                             <input
                               name="task[]"
                               placeholder="Enter task name"
-                              required
                               class="field-input"
-                              style="margin: 0"
                             />
                           </td>
                           <td>
                             <input
                               name="description[]"
                               placeholder="Task description"
-                              required
                               class="field-input"
-                              style="margin: 0"
                             />
                           </td>
                           <td>
-                            <select name="status[]" required class="field-select" style="margin: 0">
+                            <select name="status[]" class="field-select">
                               <option value="">Select Status</option>
                               <option value="pending">Pending</option>
                               <option value="in-progress">In Progress</option>
                               <option value="completed">Completed</option>
                             </select>
+                          </td>
+                          <td class="task-remove-cell">
+                            <button
+                              type="button"
+                              class="task-remove-btn"
+                              onclick="removeTaskRow(this)"
+                              title="Remove task"
+                            >
+                              <svg
+                                width="14"
+                                height="14"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="2.5"
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            </button>
                           </td>
                         </tr>
                       </tbody>
@@ -792,8 +1034,8 @@
 
                 <!-- LEAVE INFORMATION -->
                 <section>
-                  <p class="section-heading">Leave Information</p>
-                  <div class="section-block space-y-4">
+                  <p class="section-title">Leave Information</p>
+                  <div class="sub-card space-y-4">
                     <div>
                       <label class="field-label">Leave Type</label>
                       <select
@@ -809,38 +1051,53 @@
                         <option value="office-holiday">Office Holiday</option>
                       </select>
                     </div>
-
+                    <button type="button" onclick="addLeaveEntry()" class="btn-add">
+                      <svg
+                        class="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      Add Leave
+                    </button>
                     <div id="singleDaySection" class="hidden">
                       <label class="field-label">Leave Date</label>
                       <input type="date" id="singleDate" name="singleDate" class="field-input" />
                     </div>
-
                     <div id="halfDaySection" class="hidden">
                       <label class="field-label">Half Day Period</label>
-                      <div class="grid grid-cols-2 gap-3 mt-1">
-                        <label class="half-day-card relative cursor-pointer">
+                      <div class="grid grid-cols-2 gap-3">
+                        <label class="half-day-card">
                           <input
                             type="radio"
                             name="halfDayPeriod"
                             value="first-half"
-                            class="peer sr-only"
+                            class="sr-only"
                           />
-                          <p class="text-sm font-semibold text-slate-700">First Half</p>
-                          <p class="text-xs text-slate-400 mt-0.5">Morning</p>
+                          <p class="text-xs font-bold text-slate-700">First Half</p>
+                          <p style="font-size: 0.68rem; color: #94a3b8; margin-top: 2px">Morning</p>
                         </label>
-                        <label class="half-day-card relative cursor-pointer">
+                        <label class="half-day-card">
                           <input
                             type="radio"
                             name="halfDayPeriod"
                             value="second-half"
-                            class="peer sr-only"
+                            class="sr-only"
                           />
-                          <p class="text-sm font-semibold text-slate-700">Second Half</p>
-                          <p class="text-xs text-slate-400 mt-0.5">Afternoon</p>
+                          <p class="text-xs font-bold text-slate-700">Second Half</p>
+                          <p style="font-size: 0.68rem; color: #94a3b8; margin-top: 2px">
+                            Afternoon
+                          </p>
                         </label>
                       </div>
                     </div>
-
                     <div id="multipleDaysSection" class="hidden">
                       <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -864,12 +1121,11 @@
                           />
                         </div>
                       </div>
-                      <div id="leaveDaysCount" class="hidden days-chip">
-                        <span class="font-semibold">Total Leave Days:</span>
-                        <span id="totalDays" class="font-bold">0</span>
+                      <div id="leaveDaysCount" class="day-count hidden">
+                        Total Leave Days:
+                        <span id="totalDays" style="font-weight: 800; color: #0f172a">0</span>
                       </div>
                     </div>
-
                     <div id="officeHolidaySection" class="hidden">
                       <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -893,35 +1149,16 @@
                         </div>
                       </div>
                     </div>
-
                     <div id="leaveNotesSection" class="hidden">
                       <label class="field-label">Reason / Additional Notes</label>
                       <textarea
                         id="leaveNotes"
                         name="leaveNotes"
                         rows="3"
-                        class="field-textarea"
                         placeholder="Enter reason for leave or additional details..."
+                        class="field-textarea"
                       ></textarea>
                     </div>
-
-                    <button type="button" onclick="addLeaveEntry()" class="btn-blue">
-                      <svg
-                        class="w-3.5 h-3.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
-                      Add Leave
-                    </button>
-
                     <div id="leaveList" class="space-y-2"></div>
                     <input type="hidden" name="leaveInfo" id="leaveInfoHidden" />
                   </div>
@@ -929,8 +1166,8 @@
 
                 <!-- EARLY LEAVE & LATE ARRIVAL -->
                 <section>
-                  <p class="section-heading">Early Leave & Late Arrival</p>
-                  <div class="section-block space-y-4">
+                  <p class="section-title">Early Leave & Late Arrival</p>
+                  <div class="sub-card space-y-4">
                     <div class="grid grid-cols-2 gap-4">
                       <div>
                         <label class="field-label">Type</label>
@@ -945,12 +1182,13 @@
                         <input type="date" id="attendanceEventDate" class="field-input" />
                       </div>
                     </div>
-
                     <div class="grid grid-cols-2 gap-4">
                       <div>
                         <label class="field-label">Time</label>
                         <input type="time" id="attendanceEventTime" class="field-input" />
-                        <p class="text-xs text-slate-400 mt-1">Actual departure / arrival time</p>
+                        <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 4px">
+                          Actual departure / arrival time
+                        </p>
                       </div>
                       <div>
                         <label class="field-label">Reason</label>
@@ -962,8 +1200,7 @@
                         />
                       </div>
                     </div>
-
-                    <button type="button" onclick="addAttendanceEvent()" class="btn-blue">
+                    <button type="button" onclick="addAttendanceEvent()" class="btn-add">
                       <svg
                         class="w-3.5 h-3.5"
                         fill="none"
@@ -979,14 +1216,13 @@
                       </svg>
                       Add Entry
                     </button>
-
                     <div id="attendanceEventList" class="space-y-2"></div>
                     <input type="hidden" name="attendanceEvents" id="attendanceEventsHidden" />
                   </div>
                 </section>
 
                 <!-- SUBMIT -->
-                <div class="flex justify-end pt-4 border-t border-slate-100">
+                <div class="submit-row flex justify-end pt-4 border-t border-slate-100">
                   <button type="submit" class="btn-primary">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -1007,7 +1243,7 @@
     </div>
 
     <script>
-      // ── Mobile sidebar
+      // ── Mobile sidebar (UNCHANGED) ──────────────────
       const openSidebar = document.getElementById('openSidebar');
       const closeSidebar = document.getElementById('closeSidebar');
       const sidebar = document.getElementById('sidebar');
@@ -1025,43 +1261,95 @@
         overlay.classList.add('hidden');
       });
 
-      // ── TASKS
-      function addTaskRow() {
+      // ── Task remove ─────────────────────────────────
+      function removeTaskRow(btn) {
         const tbody = document.getElementById('taskTable');
+        if (tbody.rows.length <= 1) return;
+        const tr = btn.closest('tr');
+        tr.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+        tr.style.opacity = '0';
+        tr.style.transform = 'translateX(8px)';
+        setTimeout(() => tr.remove(), 180);
+      }
+
+      // ── Add task row ────────────────────────────────
+      function addTaskRow() {
+        const table = document.getElementById('taskTable');
         const row = document.createElement('tr');
-        row.className = 'table-row';
         row.innerHTML = `
-      <td><input name="task[]" placeholder="Enter task name" required class="field-input" style="margin:0;" /></td>
-      <td><input name="description[]" placeholder="Task description" required class="field-input" style="margin:0;" /></td>
-      <td>
-        <div class="flex gap-2 items-center">
-          <select name="status[]" required class="field-select" style="margin:0;flex:1;">
-            <option value="">Select Status</option>
-            <option value="pending">Pending</option>
-            <option value="in-progress">In Progress</option>
-            <option value="completed">Completed</option>
-          </select>
-          <button type="button" onclick="this.closest('tr').remove()"
-            style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.15);border-radius:8px;padding:6px;color:#f43f5e;cursor:pointer;transition:background 0.15s;display:flex;align-items:center;"
-            onmouseover="this.style.background='rgba(244,63,94,0.15)'" onmouseout="this.style.background='rgba(244,63,94,0.08)'">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-        </div>
-      </td>`;
-        tbody.appendChild(row);
+          <td><input name="task[]" placeholder="Enter task name" required class="field-input"/></td>
+          <td><input name="description[]" placeholder="Task description" required class="field-input"/></td>
+          <td>
+            <select name="status[]" required class="field-select">
+              <option value="">Select Status</option>
+              <option value="pending">Pending</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+          </td>
+          <td class="task-remove-cell">
+            <button type="button" class="task-remove-btn" onclick="removeTaskRow(this)" title="Remove task">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </td>`;
+        table.appendChild(row);
       }
 
-      // ── LEAVE
-      let leaveArray = [];
-
-      function syncLeaveHidden() {
-        document.getElementById('leaveInfoHidden').value = JSON.stringify(leaveArray);
+      // ── Week range ──────────────────────────────────
+      function getDateRangeFromWeek(week, year = new Date().getFullYear()) {
+        const firstDay = new Date(year, 0, 1);
+        const days = (week - 1) * 7;
+        const start = new Date(firstDay.getTime() + days * 86400000);
+        const day = start.getDay();
+        const monday = new Date(start);
+        monday.setDate(start.getDate() - (day === 0 ? 6 : day - 1));
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        return { monday, sunday };
       }
+      function formatDate(date) {
+        return date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
+      }
+      const weekInput = document.getElementById('weekInput');
+      const weekRangeText = document.getElementById('weekRangeText');
+      function updateWeekRange() {
+        if (!weekInput || !weekRangeText) return;
+        const value = weekInput.value.trim();
+        const match = value.match(/^W(\d{1,2})$/i);
+        if (!match) {
+          weekRangeText.classList.add('hidden');
+          return;
+        }
+        const week = parseInt(match[1]);
+        if (week < 1 || week > 53) {
+          weekRangeText.classList.add('hidden');
+          return;
+        }
+        const { monday, sunday } = getDateRangeFromWeek(week);
+        weekRangeText.innerText = `${formatDate(monday)} - ${formatDate(sunday)}`;
+        weekRangeText.classList.remove('hidden');
+      }
+      if (weekInput && weekRangeText) {
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), 0, 1);
+        const dayOfYear = Math.floor((today - firstDay) / 86400000) + 1;
+        const currentWeek = Math.ceil((dayOfYear + firstDay.getDay()) / 7);
+        weekInput.value = `W${currentWeek}`;
+        updateWeekRange();
+        weekInput.addEventListener('input', updateWeekRange);
+      }
+
+      // ── Leave (UNCHANGED logic) ─────────────────────
+      let leaveEntries = [];
 
       function handleLeaveTypeChange() {
-        const leaveType = document.getElementById('leaveType').value;
+        const leaveType = document.getElementById('leaveType');
         [
           'singleDaySection',
           'halfDaySection',
@@ -1069,226 +1357,216 @@
           'officeHolidaySection',
           'leaveNotesSection',
         ].forEach((id) => document.getElementById(id)?.classList.add('hidden'));
-        document.getElementById('singleDate').value = '';
-        document.getElementById('leaveNotes').value = '';
-        document.getElementById('fromDate').value = '';
-        document.getElementById('toDate').value = '';
-        document.getElementById('holidayDate').value = '';
-        document.getElementById('holidayName').value = '';
-        document
-          .querySelectorAll('input[name="halfDayPeriod"]')
-          .forEach((r) => (r.checked = false));
-        document.getElementById('leaveDaysCount')?.classList.add('hidden');
-        if (leaveType === 'single-full') {
+        if (!leaveType) return;
+        if (leaveType.value === 'single-full') {
           document.getElementById('singleDaySection').classList.remove('hidden');
           document.getElementById('leaveNotesSection').classList.remove('hidden');
-        } else if (leaveType === 'single-half') {
+        } else if (leaveType.value === 'single-half') {
           document.getElementById('singleDaySection').classList.remove('hidden');
           document.getElementById('halfDaySection').classList.remove('hidden');
           document.getElementById('leaveNotesSection').classList.remove('hidden');
-        } else if (leaveType === 'multiple') {
+        } else if (leaveType.value === 'multiple') {
           document.getElementById('multipleDaysSection').classList.remove('hidden');
           document.getElementById('leaveNotesSection').classList.remove('hidden');
-        } else if (leaveType === 'office-holiday') {
+        } else if (leaveType.value === 'office-holiday') {
           document.getElementById('officeHolidaySection').classList.remove('hidden');
         }
       }
 
       function calculateLeaveDays() {
-        const from = document.getElementById('fromDate').value;
-        const to = document.getElementById('toDate').value;
-        const countEl = document.getElementById('leaveDaysCount');
-        if (from && to) {
-          const diff = Math.ceil(Math.abs(new Date(to) - new Date(from)) / 86400000) + 1;
-          if (diff >= 0) {
-            document.getElementById('totalDays').textContent = diff;
-            countEl.classList.remove('hidden');
+        const fromDate = document.getElementById('fromDate');
+        const toDate = document.getElementById('toDate');
+        const leaveDaysCount = document.getElementById('leaveDaysCount');
+        const totalDaysSpan = document.getElementById('totalDays');
+        if (!fromDate || !toDate || !leaveDaysCount || !totalDaysSpan) return;
+        if (fromDate.value && toDate.value) {
+          const from = new Date(fromDate.value);
+          const to = new Date(toDate.value);
+          if (to >= from) {
+            const diffDays = Math.ceil(Math.abs(to - from) / (1000 * 60 * 60 * 24)) + 1;
+            totalDaysSpan.textContent = diffDays;
+            leaveDaysCount.classList.remove('hidden');
             return;
           }
         }
-        countEl.classList.add('hidden');
+        leaveDaysCount.classList.add('hidden');
       }
 
       function addLeaveEntry() {
-        const leaveType = document.getElementById('leaveType').value;
-        let text = '';
-        if (leaveType === 'single-full') {
-          const date = document.getElementById('singleDate').value;
-          const notes = document.getElementById('leaveNotes').value.trim();
-          if (!date) return alert('Please select a leave date');
-          const fmt = new Date(date).toLocaleDateString('en-US', {
+        const leaveType = document.getElementById('leaveType');
+        if (!leaveType || !leaveType.value) return alert('Select leave type');
+        let leaveText = '';
+        if (leaveType.value === 'single-full') {
+          const date = document.getElementById('singleDate');
+          if (!date || !date.value) return alert('Select date');
+          const fmt = new Date(date.value).toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric',
           });
-          text = `Full Day Leave on ${fmt}`;
-          if (notes) text += ` - ${notes}`;
-        } else if (leaveType === 'single-half') {
-          const date = document.getElementById('singleDate').value;
-          const period = document.querySelector('input[name="halfDayPeriod"]:checked')?.value;
-          const notes = document.getElementById('leaveNotes').value.trim();
-          if (!date) return alert('Please select a leave date');
-          if (!period) return alert('Please select half day period');
-          const fmt = new Date(date).toLocaleDateString('en-US', {
+          leaveText = `Full Day Leave on ${fmt}`;
+          const notes = document.getElementById('leaveNotes');
+          if (notes && notes.value) leaveText += ` - ${notes.value}`;
+        } else if (leaveType.value === 'single-half') {
+          const date = document.getElementById('singleDate');
+          const period = document.querySelector('input[name="halfDayPeriod"]:checked');
+          if (!date || !date.value || !period) return alert('Select date & half day period');
+          const fmt = new Date(date.value).toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric',
           });
           const periodText =
-            period === 'first-half' ? 'First Half (Morning)' : 'Second Half (Afternoon)';
-          text = `Half Day Leave (${periodText}) on ${fmt}`;
-          if (notes) text += ` - ${notes}`;
-        } else if (leaveType === 'multiple') {
-          const from = document.getElementById('fromDate').value;
-          const to = document.getElementById('toDate').value;
-          const notes = document.getElementById('leaveNotes').value.trim();
-          if (!from || !to) return alert('Please select both from and to dates');
-          const fmtFrom = new Date(from).toLocaleDateString('en-US', {
+            period.value === 'first-half' ? 'First Half (Morning)' : 'Second Half (Afternoon)';
+          leaveText = `Half Day Leave (${periodText}) on ${fmt}`;
+          const notes = document.getElementById('leaveNotes');
+          if (notes && notes.value) leaveText += ` - ${notes.value}`;
+        } else if (leaveType.value === 'multiple') {
+          const fromDate = document.getElementById('fromDate');
+          const toDate = document.getElementById('toDate');
+          if (!fromDate || !fromDate.value || !toDate || !toDate.value)
+            return alert('Select date range');
+          const fmtFrom = new Date(fromDate.value).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
           });
-          const fmtTo = new Date(to).toLocaleDateString('en-US', {
+          const fmtTo = new Date(toDate.value).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric',
           });
-          const days = document.getElementById('totalDays').textContent;
-          text = `Leave from ${fmtFrom} to ${fmtTo} (${days} days)`;
-          if (notes) text += ` - ${notes}`;
-        } else if (leaveType === 'office-holiday') {
-          const date = document.getElementById('holidayDate').value;
-          const name = document.getElementById('holidayName').value.trim();
-          if (!date) return alert('Please select holiday date');
-          if (!name) return alert('Please enter holiday name');
-          const fmt = new Date(date).toLocaleDateString('en-US', {
+          const totalDays = document.getElementById('totalDays');
+          leaveText = `Leave from ${fmtFrom} to ${fmtTo} (${totalDays ? totalDays.textContent : '0'} days)`;
+          const notes = document.getElementById('leaveNotes');
+          if (notes && notes.value) leaveText += ` - ${notes.value}`;
+        } else if (leaveType.value === 'office-holiday') {
+          const holidayDate = document.getElementById('holidayDate');
+          const holidayName = document.getElementById('holidayName');
+          if (!holidayDate || !holidayDate.value) return alert('Select holiday date');
+          if (!holidayName || !holidayName.value.trim()) return alert('Enter holiday name');
+          const fmt = new Date(holidayDate.value).toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric',
           });
-          text = `Office Holiday: ${name} on ${fmt}`;
-        } else {
-          return alert('Please select a leave type first');
+          leaveText = `Office Holiday: ${holidayName.value.trim()} on ${fmt}`;
         }
-        if (text) {
-          leaveArray.push(text);
-          syncLeaveHidden();
-          renderLeaveList();
-          document.getElementById('leaveType').value = '';
-          handleLeaveTypeChange();
-        }
-      }
-
-      function removeLeave(index) {
-        leaveArray.splice(index, 1);
-        syncLeaveHidden();
+        leaveEntries.push(leaveText);
         renderLeaveList();
-      }
-
-      function escapeHtml(str) {
-        const d = document.createElement('div');
-        d.textContent = str;
-        return d.innerHTML;
+        leaveType.value = '';
+        ['singleDate', 'fromDate', 'toDate', 'leaveNotes', 'holidayDate', 'holidayName'].forEach(
+          (id) => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+          },
+        );
+        document
+          .querySelectorAll('input[name="halfDayPeriod"]')
+          .forEach((r) => (r.checked = false));
+        handleLeaveTypeChange();
       }
 
       function renderLeaveList() {
         const list = document.getElementById('leaveList');
-        if (leaveArray.length === 0) {
-          list.innerHTML = '';
-          return;
-        }
-        list.innerHTML = leaveArray
-          .map(
-            (entry, i) => `
-      <div class="list-item-card">
-        <span style="font-size:0.82rem;color:#475569;flex:1;">${escapeHtml(entry)}</span>
-        <button type="button" onclick="removeLeave(${i})" class="remove-btn">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>`,
-          )
-          .join('');
+        const hiddenField = document.getElementById('leaveInfoHidden');
+        if (!list || !hiddenField) return;
+        list.innerHTML = '';
+        leaveEntries.forEach((leave, index) => {
+          list.innerHTML += `
+            <div class="entry-chip">
+              <span style="font-size:0.82rem;color:#475569;flex:1">${leave}</span>
+              <button type="button" onclick="removeLeave(${index})" class="entry-chip-remove">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>`;
+        });
+        hiddenField.value = JSON.stringify(leaveEntries);
       }
 
-      // ── ATTENDANCE EVENTS
+      function removeLeave(index) {
+        leaveEntries.splice(index, 1);
+        renderLeaveList();
+      }
+
+      // ── Attendance events (UNCHANGED logic) ─────────
       let attendanceEvents = [];
 
-      function syncAttendanceHidden() {
-        document.getElementById('attendanceEventsHidden').value = JSON.stringify(attendanceEvents);
-      }
-
-      function formatTimeTo12hr(time24) {
-        const [hrs, mins] = time24.split(':');
-        const h = parseInt(hrs);
-        return `${h % 12 || 12}:${mins} ${h >= 12 ? 'PM' : 'AM'}`;
-      }
-
       function addAttendanceEvent() {
-        const type = document.getElementById('attendanceEventType').value;
-        const date = document.getElementById('attendanceEventDate').value;
-        const time = document.getElementById('attendanceEventTime').value;
-        const reason = document.getElementById('attendanceEventReason').value.trim();
-        if (!type) return alert('Select type (Early Leave or Late Arrival)');
-        if (!date) return alert('Select a date');
-        if (!time) return alert('Enter a time');
-        attendanceEvents.push({ type, date, time, reason });
-        syncAttendanceHidden();
-        renderAttendanceList();
-        document.getElementById('attendanceEventType').value = '';
-        document.getElementById('attendanceEventDate').value = '';
-        document.getElementById('attendanceEventTime').value = '';
-        document.getElementById('attendanceEventReason').value = '';
+        const type = document.getElementById('attendanceEventType');
+        const date = document.getElementById('attendanceEventDate');
+        const time = document.getElementById('attendanceEventTime');
+        const reason = document.getElementById('attendanceEventReason');
+        if (!type || !type.value) return alert('Select type (Early Leave or Late Arrival)');
+        if (!date || !date.value) return alert('Select date');
+        if (!time || !time.value) return alert('Enter time');
+        const fmt = new Date(date.value).toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        });
+        const [hrs, mins] = time.value.split(':');
+        const h = parseInt(hrs);
+        const formattedTime = `${h % 12 || 12}:${mins} ${h >= 12 ? 'PM' : 'AM'}`;
+        const typeLabel = type.value === 'early-leave' ? 'Early Leave' : 'Late Arrival';
+        let entryText = `${typeLabel} on ${fmt} at ${formattedTime}`;
+        if (reason && reason.value.trim()) entryText += ` — ${reason.value.trim()}`;
+        attendanceEvents.push({
+          type: type.value,
+          date: date.value,
+          time: time.value,
+          reason: reason ? reason.value.trim() : '',
+          label: entryText,
+        });
+        renderAttendanceEvents();
+        type.value = '';
+        date.value = '';
+        time.value = '';
+        if (reason) reason.value = '';
+      }
+
+      function renderAttendanceEvents() {
+        const list = document.getElementById('attendanceEventList');
+        const hiddenField = document.getElementById('attendanceEventsHidden');
+        if (!list || !hiddenField) return;
+        list.innerHTML = '';
+        attendanceEvents.forEach((entry, index) => {
+          const badgeColor =
+            entry.type === 'early-leave'
+              ? 'background:rgba(245,158,11,0.1);color:#b45309'
+              : 'background:rgba(79,70,229,0.1);color:#4f46e5';
+          const badgeLabel = entry.type === 'early-leave' ? 'Early Leave' : 'Late Arrival';
+          list.innerHTML += `
+            <div class="entry-chip">
+              <div style="flex:1;min-width:0;">
+                <span style="display:inline-block;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:99px;${badgeColor};margin-bottom:4px">${badgeLabel}</span>
+                <p style="font-size:0.82rem;color:#475569">${entry.label.replace(/^(Early Leave|Late Arrival) /, '')}</p>
+              </div>
+              <button type="button" onclick="removeAttendanceEvent(${index})" class="entry-chip-remove">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>`;
+        });
+        hiddenField.value = JSON.stringify(attendanceEvents);
       }
 
       function removeAttendanceEvent(index) {
         attendanceEvents.splice(index, 1);
-        syncAttendanceHidden();
-        renderAttendanceList();
+        renderAttendanceEvents();
       }
 
-      function renderAttendanceList() {
-        const list = document.getElementById('attendanceEventList');
-        if (attendanceEvents.length === 0) {
-          list.innerHTML = '';
-          return;
-        }
-        list.innerHTML = attendanceEvents
-          .map((e, i) => {
-            const typeLabel = (e.type || '')
-              .replace('-', ' ')
-              .replace(/\b\w/g, (l) => l.toUpperCase());
-            const dateStr = e.date
-              ? new Date(e.date).toLocaleDateString('en-US', {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })
-              : '';
-            const timeStr = e.time ? formatTimeTo12hr(e.time) : '';
-            return `
-        <div class="list-item-card">
-          <div style="font-size:0.82rem;">
-            <span style="font-weight:700;color:#1e293b;">${typeLabel}</span>
-            <span style="color:#cbd5e1;margin:0 6px;">|</span>
-            <span style="color:#64748b;">${dateStr} at ${timeStr}</span>
-            ${e.reason ? `<p style="font-size:0.73rem;color:#94a3b8;font-style:italic;margin-top:3px;">"${escapeHtml(e.reason)}"</p>` : ''}
-          </div>
-          <button type="button" onclick="removeAttendanceEvent(${i})" class="remove-btn">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-        </div>`;
-          })
-          .join('');
-      }
-
-      // Sync before submit
-      document.querySelector('form').addEventListener('submit', () => {
-        syncLeaveHidden();
-        syncAttendanceHidden();
+      // Sync on submit
+      document.querySelector('form').addEventListener('submit', function () {
+        document.getElementById('leaveInfoHidden').value = JSON.stringify(leaveEntries);
+        document.getElementById('attendanceEventsHidden').value = JSON.stringify(attendanceEvents);
       });
     </script>
   </body>

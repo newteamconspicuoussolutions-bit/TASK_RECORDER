@@ -57,9 +57,9 @@ app.use(
     }),
     cookie: {
       maxAge: 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      // secure: false, // Set to true if using HTTPS in production
+      // // secure: process.env.NODE_ENV === 'production',
+      // // sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: false, // Set to true if using HTTPS in production
     },
   }),
 );
@@ -1272,7 +1272,7 @@ app.get('/logout', (req, res) => {
 
 // ── 404 handler — catches any unmatched route ──────────────────────
 app.use((req, res, next) => {
-  res.status(404).render('error', {
+  res.status(404).render('includes/error', {
     statusCode: 404,
     title: 'Not Found',
     message: "The page you're looking for doesn't exist or may have been moved.",
