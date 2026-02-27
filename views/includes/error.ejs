@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= statusCode %> — Task Recorder</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --indigo: #4f46e5;
+        --indigo-dark: #3730a3;
+        --indigo-light: #818cf8;
+        --violet: #7c3aed;
+        --emerald: #10b981;
+        --rose: #f43f5e;
+        --amber: #f59e0b;
+        --sidebar-bg: #0f0e17;
+        --body-bg: #f0f0f7;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+        font-family: 'Sora', sans-serif;
+        background: var(--body-bg);
+        background-image:
+          radial-gradient(ellipse at 20% 0%, rgba(79, 70, 229, 0.07) 0%, transparent 60%),
+          radial-gradient(ellipse at 80% 100%, rgba(124, 58, 237, 0.06) 0%, transparent 60%);
+        overflow: hidden;
+      }
+
+      /* ── Shell ── */
+      .shell {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* ── Sidebar strip ── */
+      .sidebar-strip {
+        width: 68px;
+        background: var(--sidebar-bg);
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        gap: 0;
+        flex-shrink: 0;
+      }
+
+      .brand-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-bottom: 28px;
+      }
+
+      .sidebar-dot {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        margin-bottom: 8px;
+        animation: pulse-dim 3s ease-in-out infinite;
+      }
+      .sidebar-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      .sidebar-dot:nth-child(4) {
+        animation-delay: 0.8s;
+      }
+      .sidebar-dot:nth-child(5) {
+        animation-delay: 1.2s;
+      }
+
+      @keyframes pulse-dim {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+
+      /* ── Main ── */
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-width: 0;
+      }
+
+      /* ── Topbar ── */
+      .topbar {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(79, 70, 229, 0.08);
+        padding: 14px 32px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+
+      .topbar-badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 99px;
+        letter-spacing: 0.04em;
+      }
+
+      .topbar h2 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1;
+      }
+      .topbar p {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        margin-top: 3px;
+      }
+
+      /* ── Content ── */
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 24px;
+      }
+
+      /* ── Error card ── */
+      .error-card {
+        background: #fff;
+        border-radius: 24px;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        box-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.04),
+          0 12px 40px rgba(79, 70, 229, 0.06);
+        width: 100%;
+        max-width: 560px;
+        overflow: hidden;
+        animation: card-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      }
+
+      @keyframes card-in {
+        from {
+          opacity: 0;
+          transform: translateY(24px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* ── Card header ── */
+      .card-header {
+        padding: 28px 32px 26px;
+        background: linear-gradient(135deg, #0f0e17, #1e1b4b);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card-header::before {
+        content: '';
+        position: absolute;
+        top: -40px;
+        right: -40px;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(79, 70, 229, 0.25) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      .code-display {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: transparent;
+        background: linear-gradient(135deg, var(--indigo-light), var(--violet));
+        -webkit-background-clip: text;
+        background-clip: text;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+        animation: shimmer 3s ease-in-out infinite;
+      }
+
+      @keyframes shimmer {
+        0%,
+        100% {
+          filter: brightness(1);
+        }
+        50% {
+          filter: brightness(1.25);
+        }
+      }
+
+      .error-title {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+
+      .error-subtitle {
+        color: rgba(255, 255, 255, 0.35);
+        font-size: 0.78rem;
+        font-weight: 400;
+      }
+
+      /* ── Status icon strip ── */
+      .status-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+      }
+
+      /* ── Card body ── */
+      .card-body {
+        padding: 28px 32px 32px;
+      }
+
+      /* ── Detail row ── */
+      .detail-block {
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-bottom: 20px;
+      }
+
+      .detail-label {
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        margin-bottom: 6px;
+      }
+
+      .detail-value {
+        font-size: 0.88rem;
+        color: #1e293b;
+        font-weight: 500;
+        line-height: 1.5;
+      }
+
+      .detail-value.mono {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        color: #475569;
+      }
+
+      /* ── Divider ── */
+      .divider {
+        height: 1px;
+        background: #f1f5f9;
+        margin: 4px 0 20px;
+      }
+
+      /* ── Action buttons ── */
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn-primary {
+        flex: 1;
+        min-width: 140px;
+        padding: 11px 20px;
+        background: linear-gradient(135deg, var(--indigo), var(--violet));
+        color: #fff;
+        border: none;
+        border-radius: 11px;
+        font-size: 0.84rem;
+        font-weight: 700;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        text-decoration: none;
+        transition:
+          opacity 0.15s,
+          box-shadow 0.15s,
+          transform 0.12s;
+        box-shadow: 0 2px 10px rgba(79, 70, 229, 0.3);
+      }
+      .btn-primary:hover {
+        opacity: 0.9;
+        box-shadow: 0 4px 18px rgba(79, 70, 229, 0.4);
+        transform: translateY(-1px);
+      }
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-secondary {
+        flex: 1;
+        min-width: 120px;
+        padding: 11px 20px;
+        background: rgba(79, 70, 229, 0.07);
+        color: var(--indigo);
+        border: 1.5px solid rgba(79, 70, 229, 0.2);
+        border-radius: 11px;
+        font-size: 0.84rem;
+        font-weight: 700;
+        font-family: 'Sora', sans-serif;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        text-decoration: none;
+        transition:
+          background 0.15s,
+          transform 0.12s;
+      }
+      .btn-secondary:hover {
+        background: rgba(79, 70, 229, 0.13);
+        transform: translateY(-1px);
+      }
+      .btn-secondary:active {
+        transform: translateY(0);
+      }
+
+      /* ── Status-specific accent colors ── */
+      /* 400 */
+      .accent-400 .code-display {
+        background: linear-gradient(135deg, #f59e0b, #f97316);
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+      .accent-400 .status-icon {
+        background: rgba(245, 158, 11, 0.12);
+        color: #f59e0b;
+      }
+      .accent-400 .topbar-badge {
+        background: rgba(245, 158, 11, 0.12);
+        color: #b45309;
+      }
+
+      /* 401 */
+      .accent-401 .code-display {
+        background: linear-gradient(135deg, #818cf8, #c4b5fd);
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+      .accent-401 .status-icon {
+        background: rgba(129, 140, 248, 0.12);
+        color: #818cf8;
+      }
+      .accent-401 .topbar-badge {
+        background: rgba(129, 140, 248, 0.12);
+        color: #4f46e5;
+      }
+
+      /* 403 */
+      .accent-403 .code-display {
+        background: linear-gradient(135deg, #f43f5e, #fb7185);
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+      .accent-403 .status-icon {
+        background: rgba(244, 63, 94, 0.12);
+        color: #f43f5e;
+      }
+      .accent-403 .topbar-badge {
+        background: rgba(244, 63, 94, 0.12);
+        color: #be123c;
+      }
+
+      /* 404 */
+      .accent-404 .code-display {
+        background: linear-gradient(135deg, #818cf8, #7c3aed);
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+      .accent-404 .status-icon {
+        background: rgba(79, 70, 229, 0.1);
+        color: var(--indigo-light);
+      }
+      .accent-404 .topbar-badge {
+        background: rgba(79, 70, 229, 0.1);
+        color: var(--indigo);
+      }
+
+      /* 500 */
+      .accent-500 .code-display {
+        background: linear-gradient(135deg, #f43f5e, #7c3aed);
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+      .accent-500 .status-icon {
+        background: rgba(244, 63, 94, 0.12);
+        color: #f43f5e;
+      }
+      .accent-500 .topbar-badge {
+        background: rgba(244, 63, 94, 0.12);
+        color: #be123c;
+      }
+
+      /* ── Decorative grid dots ── */
+      .dot-grid {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+        background-size: 22px 22px;
+        pointer-events: none;
+      }
+
+      /* ── Mobile ── */
+      @media (max-width: 600px) {
+        .sidebar-strip {
+          display: none;
+        }
+        .topbar {
+          padding: 12px 20px;
+        }
+        .card-header {
+          padding: 22px 22px 20px;
+        }
+        .card-body {
+          padding: 20px 22px 24px;
+        }
+        .code-display {
+          font-size: 2.8rem;
+        }
+        .actions {
+          flex-direction: column;
+        }
+        .btn-primary,
+        .btn-secondary {
+          min-width: unset;
+        }
+      }
+
+      /* ── Scrollbar ── */
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 99px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell accent-<%= statusCode %>">
+      <!-- Sidebar strip -->
+      <div class="sidebar-strip">
+        <div class="brand-logo">
+          <svg width="20" height="20" fill="none" stroke="white" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
+          </svg>
+        </div>
+        <div class="sidebar-dot"></div>
+        <div class="sidebar-dot"></div>
+        <div class="sidebar-dot"></div>
+      </div>
+
+      <!-- Main -->
+      <div class="main">
+        <!-- Topbar -->
+        <div class="topbar">
+          <span class="topbar-badge"><%= statusCode %></span>
+          <div>
+            <h2>Task Recorder</h2>
+            <p>An error occurred while processing your request</p>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+          <div class="error-card">
+            <!-- Header -->
+            <div class="card-header">
+              <div class="dot-grid"></div>
+
+              <!-- Status icon -->
+              <div class="status-icon">
+                <% const icons = { 400: `<svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
+                  /></svg
+                >`, 401: `<svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  /></svg
+                >`, 403: `<svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                  /></svg
+                >`, 404: `<svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  /></svg
+                >`, 500: `<svg
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  /></svg
+                >` }; const icon = icons[statusCode] || icons[500]; %> <%- icon %>
+              </div>
+
+              <div class="code-display"><%= statusCode %></div>
+              <p class="error-title"><%= title %></p>
+              <p class="error-subtitle">HTTP Error · Task Recorder</p>
+            </div>
+
+            <!-- Body -->
+            <div class="card-body">
+              <!-- Message block -->
+              <div class="detail-block">
+                <p class="detail-label">What happened</p>
+                <p class="detail-value"><%= message %></p>
+              </div>
+
+              <% if (typeof detail !== 'undefined' && detail) { %>
+              <div class="detail-block">
+                <p class="detail-label">Technical detail</p>
+                <p class="detail-value mono"><%= detail %></p>
+              </div>
+              <% } %>
+
+              <!-- Timestamp + path -->
+              <div
+                class="detail-block"
+                style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 16px;
+                  background: transparent;
+                  border: none;
+                  padding: 0;
+                  margin-bottom: 20px;
+                "
+              >
+                <div
+                  style="
+                    background: #f8fafc;
+                    border: 1.5px solid #e2e8f0;
+                    border-radius: 12px;
+                    padding: 14px 16px;
+                  "
+                >
+                  <p class="detail-label">Time</p>
+                  <p class="detail-value mono" style="font-size: 0.76rem">
+                    <%= new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit',
+                    second: '2-digit' }) %>
+                  </p>
+                </div>
+                <div
+                  style="
+                    background: #f8fafc;
+                    border: 1.5px solid #e2e8f0;
+                    border-radius: 12px;
+                    padding: 14px 16px;
+                  "
+                >
+                  <p class="detail-label">Status Code</p>
+                  <p class="detail-value mono" style="font-size: 0.76rem">
+                    <%= statusCode %> <%= title %>
+                  </p>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <!-- Actions -->
+              <div class="actions">
+                <% if (statusCode === 401) { %>
+                <a href="/login" class="btn-primary">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  Sign In
+                </a>
+                <% } else { %>
+                <a href="javascript:history.back()" class="btn-secondary">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                  Go Back
+                </a>
+                <a href="/login" class="btn-primary">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    />
+                  </svg>
+                  Dashboard
+                </a>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

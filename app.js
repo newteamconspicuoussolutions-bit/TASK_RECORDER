@@ -25,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const { saturdayReminder, mondayFollowUp } = require('./notifications');
 const { scheduleJobs } = require('./notifications.js');
+const createError = require('./utils/createError');
 
 const MONGODB_URL = process.env.ATLASDB_URL;
 
@@ -56,8 +57,9 @@ app.use(
     }),
     cookie: {
       maxAge: 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      // secure: process.env.NODE_ENV === 'production',
+      // sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: false, // Set to true if using HTTPS in production
     },
   }),
 );
@@ -110,7 +112,7 @@ function isActiveUser(req, res, next) {
 function isAdmin(req, res, next) {
   if (req.isAuthenticated() && req.user.role === 'admin' && req.user.isActive) return next();
   if (!req.isAuthenticated()) return res.redirect('/login');
-  return res.status(403).send('Admin access only');
+  return next(createError(403, 'Admin access only'));
 }
 
 function isEmployee(req, res, next) {
@@ -121,7 +123,7 @@ function isEmployee(req, res, next) {
   )
     return next();
   if (!req.isAuthenticated()) return res.redirect('/login');
-  return res.status(403).send('Employee access only');
+  return next(createError(403, 'Employee access only'));
 }
 
 async function isSingleSession(req, res, next) {
@@ -238,7 +240,7 @@ app.post('/login', (req, res, next) => {
 app.get('/employee/dashboard/:userId', isAuthenticated, isEmployee, async (req, res) => {
   try {
     if (req.params.userId !== req.user._id.toString()) {
-      return res.status(403).send('Unauthorized');
+      return next(createError(403, 'You do not have permission to view this report'));
     }
 
     const reports = await WeeklyStatusReport.find({
@@ -262,7 +264,7 @@ app.post('/employee/create-report', isAuthenticated, isEmployee, async (req, res
     let { task, description, status, week, leaveInfo, attendanceEvents } = req.body;
 
     if (!week) {
-      return res.status(400).send('Week is required');
+      return next(createError(400, 'Week is required'));
     }
 
     // Parse leaveInfo
@@ -368,7 +370,7 @@ app.get('/employee/dashboard/:userId/show-report/:reportId', async (req, res) =>
     }
 
     if (report.user._id.toString() !== userId) {
-      return res.status(403).send('Unauthorized');
+      return next(createError(403, 'You do not have permission to view this report'));
     }
 
     res.render('includes/report-details', { report, userId });
@@ -391,7 +393,7 @@ app.get('/employee/dashboard/:userId/edit-report/:reportId', async (req, res) =>
     }
 
     if (report.user._id.toString() !== userId) {
-      return res.status(403).send('Unauthorized');
+      return next(createError(403, 'You do not have permission to view this report'));
     }
 
     res.render('includes/edit-report', { report, userId });
@@ -413,7 +415,8 @@ app.post(
       const report = await WeeklyStatusReport.findById(reportId);
 
       if (!report) return res.status(404).send('Report not found');
-      if (report.user.toString() !== userId) return res.status(403).send('Unauthorized');
+      if (report.user.toString() !== userId)
+        return next(createError(403, 'You do not have permission to view this report'));
 
       report.duration = duration;
 
@@ -519,7 +522,7 @@ app.delete('/employee/dashboard/:userId/report/:reportId/task/:taskId', async (r
 // ===================== ADMIN ROUTES =====================
 
 // Admin dashboard
-app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
+app.get('/admin/dashboard', isAuthenticated, isAdmin, async (req, res) => {
   try {
     const employees = await User.find().sort({ createdAt: -1 });
 
@@ -534,27 +537,33 @@ app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
 });
 
 // Update user status
-app.patch('/admin/dashboard/:id/status', async (req, res) => {
-  try {
-    let { isActive } = req.body;
+app.patch(
+  '/admin/dashboard/:id/status',
+  isAuthenticated,
+  isActiveUser,
+  isAdmin,
+  async (req, res) => {
+    try {
+      let { isActive } = req.body;
 
-    isActive = isActive === true || isActive === 'true';
+      isActive = isActive === true || isActive === 'true';
 
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, { isActive }, { new: true });
+      const updatedUser = await User.findByIdAndUpdate(req.params.id, { isActive }, { new: true });
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' });
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json({
+        success: true,
+        message: `User ${isActive ? 'activated' : 'deactivated'}`,
+      });
+    } catch (err) {
+      console.error('SERVER ERROR:', err);
+      res.status(500).json({ message: 'Server error' });
     }
-
-    res.json({
-      success: true,
-      message: `User ${isActive ? 'activated' : 'deactivated'}`,
-    });
-  } catch (err) {
-    console.error('SERVER ERROR:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+  },
+);
 
 // Update employee
 app.post(
@@ -976,7 +985,7 @@ app.post(
       let { task, description, status, week, leaveInfo, attendanceEvents } = req.body;
 
       if (!week) {
-        return res.status(400).send('Week is required');
+        return next(createError(400, 'Week is required'));
       }
 
       const employee = await User.findById(employeeId);
@@ -1256,6 +1265,91 @@ app.get('/logout', (req, res) => {
   req.logout((err) => {
     if (err) return res.status(500).send('Logout failed');
     res.redirect('/login');
+  });
+});
+
+// ===================== ERROR HANDLING MIDDLEWARE =====================
+
+// ── 404 handler — catches any unmatched route ──────────────────────
+app.use((req, res, next) => {
+  res.status(404).render('error', {
+    statusCode: 404,
+    title: 'Not Found',
+    message: "The page you're looking for doesn't exist or may have been moved.",
+    detail: null,
+  });
+});
+
+// ── Global error handler — catches all thrown / next(err) errors ───
+app.use((err, req, res, next) => {
+  console.error('[ERROR]', err);
+
+  // Determine status code
+  const statusCode = err.status || err.statusCode || 500;
+
+  // Map common status codes to friendly titles + messages
+  const errorMap = {
+    400: {
+      title: 'Bad Request',
+      message:
+        err.message || 'The request could not be understood or was missing required parameters.',
+    },
+    401: {
+      title: 'Unauthorized',
+      message: err.message || 'You need to be signed in to access this resource.',
+    },
+    403: {
+      title: 'Access Denied',
+      message: err.message || 'You do not have permission to perform this action.',
+    },
+    404: {
+      title: 'Not Found',
+      message: err.message || "The resource you requested couldn't be found.",
+    },
+    409: {
+      title: 'Conflict',
+      message: err.message || 'A conflict occurred with the current state of the resource.',
+    },
+    422: {
+      title: 'Validation Error',
+      message: err.message || 'The submitted data failed validation. Please review and try again.',
+    },
+    429: {
+      title: 'Too Many Requests',
+      message:
+        err.message || 'You have sent too many requests. Please wait a moment and try again.',
+    },
+    500: {
+      title: 'Internal Server Error',
+      message: 'Something went wrong on our end. Please try again or contact your administrator.',
+    },
+    503: {
+      title: 'Service Unavailable',
+      message: 'The service is temporarily unavailable. Please try again shortly.',
+    },
+  };
+
+  const mapped = errorMap[statusCode] || errorMap[500];
+
+  // Only expose technical detail in development
+  const detail =
+    process.env.NODE_ENV !== 'production' && err.message && statusCode === 500 ? err.message : null;
+
+  // Respond as JSON for API/AJAX requests
+  if (req.xhr || req.headers.accept?.includes('application/json')) {
+    return res.status(statusCode).json({
+      error: mapped.title,
+      message: mapped.message,
+      statusCode,
+    });
+  }
+
+  // Render the EJS error page
+  res.status(statusCode).render('includes/error', {
+    statusCode,
+    title: mapped.title,
+    message: mapped.message,
+    detail,
   });
 });
 
