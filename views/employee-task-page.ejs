@@ -57,7 +57,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        height: 100vh;
+        height: 100dvh;
         z-index: 30;
         width: var(--sidebar-width);
         display: flex;
@@ -731,24 +731,29 @@
       /* ── Mobile sidebar scroll ───────────────── */
       @media (max-width: 1023px) {
         aside {
+          height: 100dvh !important;
           overflow: hidden !important;
-          display: flex;
-          flex-direction: column;
+          display: flex !important;
+          flex-direction: column !important;
         }
 
-        aside nav {
-          flex: 1;
-          overflow-y: auto;
-          overflow-x: hidden;
+        .sidebar-top-section {
+          flex-shrink: 0 !important;
           min-height: 0;
         }
 
+        aside nav {
+          flex: 1 1 0 !important;
+          overflow-y: auto;
+          overflow-x: hidden;
+          min-height: 0 !important;
+        }
+
         .sidebar-bottom-section {
-          flex-shrink: 0;
-          position: relative;
+          flex-shrink: 0 !important;
+          min-height: 0;
           background: var(--sidebar-bg);
           border-top: 1px solid var(--sidebar-border);
-          z-index: 2;
         }
       }
       /* ── Bottom breathing room on mobile ─────────── */
